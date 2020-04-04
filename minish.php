@@ -86,7 +86,7 @@ class App {
   public function __invoke() {
     $this->_initRoute();
     $view = $this->_getView();  // Handles route not found (i.e. null).
-    $data = $this->_getViewData($route);  // Initialize view data even if route not found.
+    $data = $this->_getViewData();  // Initialize view data even if route not found.
 
     // Execute the view passing it a reference to te app, the route name and the view data.
     $view($this, $data);
@@ -138,7 +138,6 @@ class App {
 
     if (!$baseMetaTitle) { return $title; }
     if (!$title) { return $baseMetaTitle; }
-    debug(title, $baseMetaTitle);
 
     // Check whether there is a formatter defined in the settings.
     $metaTitleFormatter = $this->_settings["metaTitleFormatter"];
@@ -280,15 +279,12 @@ class App {
     * - `_routeName`: The name of the current route. @see App::$routeName
     * - `_routeConfig`: The config of the current route.
     * - `_routes`: The routes config, without their `view` and `template` attributes. @see App::$_routes
-    *
-    * @param $routeName string Name of the current route.
-    *
     */
-  protected function _getViewData($routeName) {
+  protected function _getViewData() {
     $data = $this->_loadConfig("data");
 
     // Export the formatted HTML meta title.
-    $data["_metaTitle"] = $this->getMetaTitle($this->_routes[$routeName]["title"]);
+    $data["_metaTitle"] = $this->getMetaTitle($this->_routes[$this->routeName]["title"]);
 
     // Export the routes config without their `view` and `template` attributes.
     $data["_routes"] = $this->_routes;
@@ -371,7 +367,7 @@ class App {
       }
 
       // If `title` is not defined, convert the route name.
-      $routes[$routeName]["title"] = $this->_formatRouteTitle($routes[$routeName]["title"], $routeName);
+      $this->_formatRouteTitle($routes[$routeName]["title"], $routeName);
     }
 
     $this->_routes = $routes;
