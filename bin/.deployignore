@@ -1,0 +1,6 @@
+# This is for the `deploy` script.
+# Files that rsync must ignore.
+
+bin/
+.git*
+*.md

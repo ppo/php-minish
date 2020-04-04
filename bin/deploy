@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# `$@` is passed at the end of the `rsync` command.
+# So that you can for example run a `deploy --dry-run`.
+
+__DIR__="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+
+[ -f "$__DIR__/.env" ] && source "$__DIR__/.env"
+[ -z "$DEPLOY_DST" ] && { echo "ERROR: 'DEPLOY_DST' is not defined and no '.env' file."; exit 1; }
+
+rsync -au --delete --progress --exclude-from="$__DIR__/.deployignore" "$@" "$__DIR__/../" "${DEPLOY_DST%/}/"

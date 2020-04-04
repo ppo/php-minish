@@ -1,0 +1,31 @@
+# Enable the runtile rewriting engine. Requires `mod_rewrite`.
+RewriteEngine On
+
+# Base path to be omitted.
+RewriteBase "/"
+
+# Force HTTPS; except for Let's Encrypt checks.
+RewriteCond %{HTTP:X-Forwarded-SSL} !on
+RewriteCond %{REQUEST_URI} !^/\.well\-known/
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# Redirect all sub-domains.
+RewriteCond %{HTTP_HOST} !^example.com$ [NC]
+RewriteRule ^(.*)$ https://example.com/ [R=301,L]
+
+# Redirect all URLs to `index.php`.
+FallbackResource index.php
+
+# If `FallbackResource` is not available…
+# # Don't redirect existing files, directories and symbolic links.
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteCond %{REQUEST_FILENAME} !-l
+#
+# # Redirect all URLs to `index.php`.
+# # [QSA]: Keep the query string.
+# # [L]: Stop processing the rule set here.
+# RewriteRule . index.php [QSA,L]
+
+# Hide (and prevent access to) the `.git` directory.
+Redirect 404 /.git

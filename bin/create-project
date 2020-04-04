@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+
+declare -r __DIR__="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+
+# See: https://github.com/ppo/bash-colors
+c() { echo "$1" | sed -E "s/(^|[^-_])([krgybmcw])/\1-\2/;s/(^$|0)/!0¡/;s/([BUFNL])/!\1¡/g;s/([-_])([krgybmcw])/!\1\2¡/g;y/BUFN-_krgybmcw/14573401234567/;s/L/22/;s/!/\\\033[/g;s/¡/m/g"; }
+
+
+declare -A answers=(
+  [project_slug]="my-project"
+  [project_dir]="~/dev/my-project"
+  [project_meta_title]="My Project"
+  [project_domain]="my-project.com"
+  [project_rsync_dst]="$(whoami)@my-project.com:/path/to/my-project"
+  [minish_git_dir]="/tmp"
+)
+
+ask_question() {
+  printf "$(c wB)${2}$(c)\n$(c L)Example: ${3}$(c)\n$(c g)> "
+  read
+  printf "$(c)"
+  [ -n "$REPLY" ] && answers[$1]="$REPLY"
+  echo
+}
+
+ask_execute() {
+  REPLY=
+  if [ "$#" == 1 ]; then
+    printf "$(c wB)Execute? $(c 0c)${1}\n"
+  else
+    printf "$(c wB)${1}\n"
+    shift
+    for cmd in "$@"; do printf "$(c 0c)${cmd}\n"; done
+  fi
+  while [ -z "$REPLY" ]; do
+    printf "> $(c gB)y$(c) or $(c gB)n$(c)? "
+    read -n 1
+    if [ -n "$REPLY" ]; then
+      echo
+      if [ "${REPLY,,}" == "y" ]; then
+        for cmd in "$@"; do
+          eval "${cmd}"
+          [ $? != 0 ] && { echo -e "$(c rB)Command failed, abort.$(c)"; exit $?; }
+        done
+        echo -e "$(c g)Successfully executed.$(c)"
+      else
+        echo -e "Skipped."
+      fi
+    fi
+  done
+  echo
+}
+
+
+printf "\n$(c yB)This will create a new $(c w)php-minish$(c y) project.$(c)\n\n"
+
+ask_question project_slug "What's the slug/machine name of your project?" "${answers[project_slug]}"
+answers[project_dir]=${answers[project_dir]/my-project/${answers[project_slug]}}
+answers[project_rsync_dst]=${answers[project_rsync_dst]/to\/my-project/to\/${answers[project_slug]}}
+
+ask_question project_dir "Where do you want to create your project?" "${answers[project_dir]}"
+answers[project_dir]=${answers[project_dir]%/}
+
+ask_question project_meta_title "What's the default HTML meta title?" "${answers[project_meta_title]}"
+
+ask_question project_domain "What will be the final domain name?" "${answers[project_domain]}"
+answers[project_rsync_dst]=${answers[project_rsync_dst]/my-project\.com/${answers[project_domain]}}
+
+ask_question project_rsync_dst "What will be the rsync destination to deploy your project on your server?" "${answers[project_rsync_dst]}"
+answers[project_rsync_dst]=${answers[project_rsync_dst]%/}
+
+ask_question minish_git_dir "Where do you want to clone php-minish git repository?" "${answers[minish_git_dir]}"
+answers[minish_git_dir]="${answers[minish_git_dir]%/}/php-minish"
+
+
+printf "$(c yB)Here's what you defined:$(c)\n"
+printf "  $(c w)Path to Minish cloned repo: $(c g)${answers[minish_git_dir]}$(c)\n"
+printf "  $(c w)Slug: $(c g)${answers[project_slug]}$(c)\n"
+printf "  $(c w)Project path: $(c g)${answers[project_dir]}$(c)\n"
+printf "  $(c w)Meta title: $(c g)${answers[project_meta_title]}$(c)\n"
+printf "  $(c w)Domain: $(c g)${answers[project_domain]}$(c)\n"
+printf "  $(c w)Deployment destination: $(c g)${answers[project_rsync_dst]}$(c)\n"
+printf "  $(c w)Local server: $(c g)http://${answers[project_slug]}:8000$(c)\n"
+printf "\n\n"
+
+
+ask_execute "Clone php-minish.git?" \
+  "git clone git@github.com:ppo/php-minish.git ${answers[minish_git_dir]}"
+
+ask_execute "Generate project skeleton?" \
+  "cp -r ${answers[minish_git_dir]}/skeleton ${answers[project_dir]}" \
+  "cp ${answers[minish_git_dir]}/minish.php ${answers[project_dir]}/_private/" \
+  "sed -i \"\" -e \"s/Default Minish/${answers[project_meta_title]}/g\" ${answers[project_dir]}/_private/config/settings.php"
+
+ask_execute "Copy bin scripts?" \
+  "cp -r ${answers[minish_git_dir]}/bin ${answers[project_dir]}/" \
+  "chmod 744 ${answers[project_dir]}/bin/{deploy,server}" \
+  "rm ${answers[project_dir]}/bin/create-project" \
+  "sed -i \"\" -e \"s/localhost/${answers[project_slug]}.test/g\" ${answers[project_dir]}/bin/server"
+
+ask_execute "Configure for deployment? (not actually deploying files)" \
+  "mv ${answers[project_dir]}/bin/.env.example ${answers[project_dir]}/bin/.env" \
+  "sed -i \"\" -e \"s/^DEPLOY_DST=.*$/DEPLOY_DST=${answers[project_rsync_dst]//\//\\/}/g\" ${answers[project_dir]}/bin/.env" \
+  "sed -i \"\" -e \"s/example\.com/${answers[project_domain]}/g\" ${answers[project_dir]}/.htaccess"
+
+
+printf "$(c gB)Project successfully created in $(c y)${answers[project_dir]}$(c)\n\n"

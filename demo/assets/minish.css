@@ -1,0 +1,28 @@
+body {
+  font-family: Roboto, -apple-system, BlinkMacSystemFont, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+  margin: 20px 30px;
+}
+
+a {
+  color: #00b;
+  text-decoration: none;
+}
+  a.active {
+    color: #b00;
+  }
+  a:hover {
+    color: #00e;
+    text-decoration: underline;
+  }
+
+header {
+  border-bottom: 1px solid #666;
+  margin-bottom: 30px;
+  padding-bottom: 10px;
+}
+
+.now {
+  color: #666;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
