@@ -319,6 +319,8 @@ PROJECT_ROOT/
 # 📋 TODO
 
 - Route parameters (e.g. `/blog/{author}/{slug}`), back and forth.
+- Allow tree structure for routes.
+- Tool to generate a `sitemap.xml`.
 - 🤔(false good idea?) Integration with [Twig](https://github.com/twigphp/Twig)
 - 🤔(probably not) Or…
   - Simple `{{ var }}` substitution?

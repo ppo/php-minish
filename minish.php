@@ -8,9 +8,9 @@
  * @author Pascal Polleunus
  */
 
-/** Path to the private folder (hidden from the web). */
+// Make sure the path to the private folder is defined. */
 if (!defined("PRIVATE_DIR")) {
-  throw new Exception("Cannot locate the root folder. Please define it using an `PRIVATE_DIR` constant.");
+  throw new Exception("Cannot locate the private folder. Please define it using a `PRIVATE_DIR` constant.");
 }
 
 
@@ -29,11 +29,11 @@ class App {
   /** Folder containing the config files. */
   const CONFIG_DIR = PRIVATE_DIR . "/config";
 
-  /** Folder containing the templates. */
-  const TEMPLATE_DIR = PRIVATE_DIR . "/templates";
-
   /** Default base template name. */
   const DEFAULT_BASE_TEMPLATE_NAME = "_base";
+
+  /** Folder containing the templates. */
+  const TEMPLATE_DIR = PRIVATE_DIR . "/templates";
 
 
   /**
@@ -75,7 +75,6 @@ class App {
     $this->_loadSettings();
     if ($this->_settings["autoloader"]) { spl_autoload_register($this->_settings["autoloader"]); }
     $this->_loadRoutes();
-    $this->_initRequestPath();
   }
 
   /**
@@ -84,6 +83,7 @@ class App {
    * Lifecycle: detect the route, create the view, initialize view data, execute the view.
    */
   public function __invoke() {
+    $this->_initRequestPath();
     $this->_initRoute();
     $view = $this->_getView();  // Handles route not found (i.e. null).
     $data = $this->_getViewData();  // Initialize view data even if route not found.
