@@ -552,4 +552,4 @@ class View {
 
 
 // Auto-launch the app.
-(new App())();
+return new App();
