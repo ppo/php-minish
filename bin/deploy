@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # `$@` is passed at the end of the `rsync` command.
 # So that you can for example run a `deploy --dry-run`.
