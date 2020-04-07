@@ -149,29 +149,29 @@ class App {
    * - As a string that will be formatted with `sprintf`.
    * - As a callable.
    *
-   * @param string $title Title of the current view.
+   * @param string $routeTitle Title of the current view.
    * @return string The value for the HTML meta title.
    */
-  public function getMetaTitle($title) {
-    $baseMetaTitle = $this->_settings["baseMetaTitle"];
+  public function getMetaTitle($routeTitle) {
+    $baseTitle = $this->_settings["baseMetaTitle"];
 
-    if (!$baseMetaTitle) { return $title; }
-    if (!$title) { return $baseMetaTitle; }
+    if (!$baseTitle) { return $routeTitle; }
+    if (!$routeTitle) { return $baseTitle; }
 
     // Check whether there is a formatter defined in the settings.
     $metaTitleFormatter = $this->_settings["metaTitleFormatter"];
     if ($metaTitleFormatter) {
       // If it's a callable…
       if (is_callable($metaTitleFormatter)) {
-        return $metaTitleFormatter($baseMetaTitle, $title);
+        return $metaTitleFormatter($baseTitle, $routeTitle);
       }
 
       // Else it must be a string.
-      return sprintf($metaTitleFormatter, $baseMetaTitle, $title);
+      return sprintf($metaTitleFormatter, $baseTitle, $routeTitle);
     }
 
     // If no formatter defined.
-    return $title;
+    return $routeTitle;
   }
 
   /**
@@ -221,15 +221,15 @@ class App {
    *
    * This method receives the title as reference and update it directly.
    *
-   * @param string &$title Reference to the route title.
+   * @param string &$routeTitle Reference to the route title.
    * @param string $routeName The route name.
    * @param boolean $force Whether to force formatting even if the title is set to `false`.
    */
-  protected function _formatRouteTitle(&$title, $routeName, $force=false) {
+  protected function _formatRouteTitle(&$routeTitle, $routeName, $force=false) {
     $formatter = $this->_settings["routeTitleFormatter"];
-    if ($formatter && !$title && ($force || $title !== false)) {
-      $title = $formatter($routeName);
-      return $title;
+    if ($formatter && !$routeTitle && ($force || $routeTitle !== false)) {
+      $routeTitle = $formatter($routeName);
+      return $routeTitle;
     }
   }
 
