@@ -90,6 +90,7 @@ In the `bin` folder, there are 3 scripts:
 - `create-project` to guide you through the process of creating a new project.
 - `server` to run your local PHP Development Server.
     - If you use [dnsmasq](http://www.thekelleys.org.uk/dnsmasq/doc.html), replace `localhost` with something like `yourproject.test`.
+- `generate-sitemap.php` to generate a `sitemap.xml` file.
 - `deploy` to rsync your project with your server.
     - You can specify the destination in `.env`. (`.gitignore`'d in that folder)
     - `.deployignore` allows you to configure which files to exclude from rsync.
@@ -281,6 +282,7 @@ The following settings are available:
     - A lambda function: `function($class) { include "{$class}.php"; }`
 - `baseMetaTitle`: The base part of the HTML meta title that is used in `settings.metaTitleFormatter($viewTitle)`.
 - `baseTemplateName`: The name of the base template. Default: `"_base"`.
+- `baseUrl`: The base URL of the site. Example: `"https://example.com"`.
 - `metaTitleFormatter`: Used to format the HTML meta title based on `baseTitle` and `viewTitle`. It can be defined as:
     - As a string that will be formatted with `sprintf`. Default method with: `"%2$s | %1$s"`.
     - As a callable.
