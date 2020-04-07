@@ -85,9 +85,13 @@ rsync -au --delete --progress --exclude-from="$__DIR__/.deployignore" "$project_
 
 #### 🍒 Cherry on the cake
 
-In the `bin` folder, there are 3 scripts:
+In the `bin` folder, there's a script:
 
 - `create-project` to guide you through the process of creating a new project.
+
+
+In the `bin` folder of your project (coming from `skeleton/bin`), there are 3 scripts:
+
 - `server` to run your local PHP Development Server.
     - If you use [dnsmasq](http://www.thekelleys.org.uk/dnsmasq/doc.html), replace `localhost` with something like `yourproject.test`.
 - `generate-sitemap.php` to generate a `sitemap.xml` file.
