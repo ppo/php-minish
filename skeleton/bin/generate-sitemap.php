@@ -3,8 +3,10 @@
 define("PUBLIC_DIR", dirname(__DIR__));
 define("PRIVATE_DIR", PUBLIC_DIR . "/_private");
 
-$app = require_once PRIVATE_DIR . "/minish.php";
+require_once PRIVATE_DIR . "/minish.php";
 
+
+$app = new App();
 [$sitemapPath, $googlePingUrl] = $app->generateSitemap();
 
 echo "Sitemap successfully generated: {$sitemapPath}\n\n" .

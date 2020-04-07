@@ -88,8 +88,8 @@ class App {
    *
    * Lifecycle: detect the route, create the view, initialize view data, execute the view.
    */
-  public function __invoke() {
     $this->_initRequestPath();
+  public function run() {
     $this->_initRoute();
     $view = $this->_getView();  // Handles route not found (i.e. null).
     $data = $this->_getViewData();  // Initialize view data even if route not found.
@@ -621,10 +621,3 @@ function isLocal() {
   return $_SERVER["SERVER_NAME"] === "localhost"
     || substr($_SERVER["SERVER_NAME"], -5) == ".test";
 }
-
-
-# ======================================================================================================================
-# RETURN AN INSTANCE OF THE APP
-# ======================================================================================================================
-
-return new App();
