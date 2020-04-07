@@ -77,10 +77,19 @@ class App {
 
   # PUBLIC -------------------------------------------------------------------------------------------------------------
 
-  public function __construct() {
+  /**
+   * Constructor.
+   *
+  * @param boolean $isConsole Whether we're running in console mode.
+  */
+
+  public function __construct($isConsole=false) {
     $this->_loadSettings();
     if ($this->_settings["autoloader"]) { spl_autoload_register($this->_settings["autoloader"]); }
-    $this->_loadRoutes();
+
+    if (!$isConsole) {
+      $this->_loadRoutes();
+    }
   }
 
   /**
@@ -115,51 +124,6 @@ class App {
 
     // Import the file if it exists.
     if (file_exists($path)) { include $path; }
-  }
-
-  /**
-   * Generate a `sitemap.xml` based on the routes configuration.
-   */
-  public function generateSitemap() {
-    // Make sure the path to the public folder is defined. */
-    if (!defined("PUBLIC_DIR")) {
-      throw new Exception("Cannot locate the public folder. Please define it using a `PUBLIC_DIR` constant.");
-    }
-
-    // Make sure the base URL of the website is defined. */
-    $baseUrl = $this->_settings["baseUrl"];
-    if (!$this->_settings["baseUrl"]) {
-      throw new Exception(
-        "The base URL is not defined in the app settings. Please define `baseUrl` in `config/settings.php`."
-      );
-    }
-
-    $sitemapPath = static::SITEMAP_PATH;
-    $sitemapUrl = "{$baseUrl}/sitemap.xml";
-    $googlePingUrl = static::GOOGLE_PING_URL . "?sitemap=" . rawurlencode($sitemapUrl);
-
-    $file = fopen($sitemapPath, "w");
-    fwrite($file, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
-
-    foreach ($this->_routes as $routeName => $routeConfig) {
-      if ($this->templateExists($routeName)) {
-        $stat = stat($this->getTemplatePath($routeName));
-        $lastMod = date("Y-m-d", $stat["mtime"]);
-        fwrite($file,
-          "<url>" .
-            "<loc>{$baseUrl}{$routeConfig[path]}</loc>" .
-            "<lastmod>{$lastMod}</lastmod>" .
-            "<changefreq>monthly</changefreq>" .
-            "<priority>1</priority>" .
-          "</url>"
-        );
-      }
-    }
-
-    fwrite($file, '</urlset>');
-    fclose($file);
-
-    return [$sitemapPath, $googlePingUrl];
   }
 
   /**
@@ -477,6 +441,56 @@ class App {
   protected function _triggerError($message, $throw=false) {
     trigger_error($message);
     if ($throw) { throw new Exception($message); }
+  }
+
+
+  # CONSOLE ------------------------------------------------------------------------------------------------------------
+
+  /**
+   * Generate a `sitemap.xml` based on the routes configuration.
+   */
+  public function generateSitemap() {
+    // Make sure the path to the public folder is defined. */
+    if (!defined("PUBLIC_DIR")) {
+      throw new Exception("Cannot locate the public folder. Please define it using a `PUBLIC_DIR` constant.");
+    }
+
+    // Make sure the base URL of the website is defined. */
+    $baseUrl = $this->_settings["baseUrl"];
+    if (!$baseUrl) {
+      throw new Exception(
+        "The base URL is not defined in the app settings. Please define `baseUrl` in `config/settings.php`."
+      );
+    }
+
+    $this->_loadRoutes();
+
+    $sitemapPath = static::SITEMAP_PATH;
+    $sitemapUrl = "{$baseUrl}/sitemap.xml";
+    $googlePingUrl = static::GOOGLE_PING_URL . "?sitemap=" . rawurlencode($sitemapUrl);
+
+    $file = fopen($sitemapPath, "w");
+    fwrite($file, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
+
+    foreach ($this->_routes as $routeName => $routeConfig) {
+      if ($this->templateExists($routeName)) {
+        $stat = stat($this->getTemplatePath($routeName));
+        $lastMod = date("Y-m-d", $stat["mtime"]);
+        fwrite($file,
+          "<url>" .
+            "<loc>{$baseUrl}{$routeConfig[path]}</loc>" .
+            "<lastmod>{$lastMod}</lastmod>" .
+            "<changefreq>monthly</changefreq>" .
+            "<priority>1</priority>" .
+          "</url>"
+        );
+      }
+    }
+
+    fwrite($file, '</urlset>');
+    fclose($file);
+
+    return [$sitemapPath, $googlePingUrl];
   }
 }
 
