@@ -88,7 +88,6 @@ class App {
    *
    * Lifecycle: detect the route, create the view, initialize view data, execute the view.
    */
-    $this->_initRequestPath();
   public function run() {
     $this->_initRoute();
     $view = $this->_getView();  // Handles route not found (i.e. null).
@@ -377,6 +376,8 @@ class App {
     * @return string|null The name of the route or null if no route found.
     */
   protected function _initRoute() {
+    $this->_initRequestPath();
+
     foreach ($this->_routes as $routeName => $routeConfig) {
       if ($routeConfig["path"] === $this->requestPath) {
         $this->routeName = $routeName;
