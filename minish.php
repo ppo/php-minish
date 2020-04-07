@@ -293,7 +293,17 @@ class App {
     // Retrieve the route config.
     $config = $this->_routes[$this->routeName];
 
-    // First check if there's a view configured.
+    // Check if it's a redirection.
+    if (isset($config["redirect"])) {
+      $url = $config["redirect"];
+      if (!isLocal() && substr($url, 0, 4) !== "http") {
+        $url = ($this->_settings["baseUrl"] ?: "") . $url;
+      }
+      header("Location: {$url}");
+      die;
+    }
+
+    // Check if there's a view configured.
     // It can be a callable or the name of a View class (string).
     if (isset($config["view"])) {
       return is_callable($config["view"]) ? $config["view"] : new $config["view"]();
@@ -602,5 +612,19 @@ class View {
 }
 
 
-// Auto-launch the app.
+
+# ======================================================================================================================
+# UTILS
+# ======================================================================================================================
+
+function isLocal() {
+  return $_SERVER["SERVER_NAME"] === "localhost"
+    || substr($_SERVER["SERVER_NAME"], -5) == ".test";
+}
+
+
+# ======================================================================================================================
+# RETURN AN INSTANCE OF THE APP
+# ======================================================================================================================
+
 return new App();
