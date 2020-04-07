@@ -29,9 +29,6 @@ class App {
   /** Folder containing the config files. */
   const CONFIG_DIR = PRIVATE_DIR . "/config";
 
-  /** Default base template name. */
-  const DEFAULT_BASE_TEMPLATE_NAME = "_base";
-
   /** URL to alert Google that the sitemap has been updated. */
   const GOOGLE_PING_URL = "https://www.google.com/webmasters/tools/ping";
 
@@ -44,22 +41,13 @@ class App {
 
   /**
     * @var array App settings, auto-loaded from `_private/config/settings.php`.
-    *
-    * Supported values:
-    * - `autoloadDirs` array List of folders for `App::autoloader` to look for classes.
-    * - `autoloader` callable Autoloader function for `spl_autoload_register`.
-    * - `baseMetaTitle` string The base HTML meta title. @see App:getBaseTemplatePath()
-    * - `baseTemplateName` string Name of the base template. @see App::getBaseTemplatePath()
-    * - `baseUrl` string The base URL of the site. Example: `https://example.com`.
-    * - `metaTitleFormatter` string|callable Handler to format the HTML meta title. @see App::getMetaTitle()
-    * - `routeTitleFormatter` string|callable Handler to format the route title. @see App::_formatRouteTitle()
-    *
     * @see App::_loadSettings()
     */
   protected $_settings = [
     "autoloader" => "static::autoloader",
-    "metaTitleFormatter" => '%2$s | %1$s',  # default, route title
-    "routeTitleFormatter" => null,
+    "baseTemplateName" => "_base",
+    "metaTitleFormatter" => '%2$s | %1$s',  # Params: `baseTitle, routeTitle`.
+    "routeTitleFormatter" => null,  # Default value defined in `App::_loadSettings()`.
   ];
 
   /**
@@ -418,34 +406,84 @@ class App {
 
   /**
     * Load app settings from `_private/config/settings.php`.
+    *
+    * Supported values:
+    * - `autoloadDirs` array List of folders for `App::autoloader` to look for classes.
+    * - `autoloader` callable Custom autoloader function for `spl_autoload_register()`.
+    * - `baseMetaTitle` string Required. The base HTML meta title. @see App:getBaseTemplatePath()
+    * - `baseTemplateName` string Name of the base template. Default: `"_base"`. @see App::getBaseTemplatePath()
+    * - `baseUrl` string The base URL of the site. Required to generate `sitemap.xml`. Example: `https://example.com`.
+    * - `metaTitleFormatter` string|callable Handler to format the HTML meta title. Default: `'%2$s | %1$s'`.
+    *   @see App::getMetaTitle()
+    * - `routeTitleFormatter` callable Handler to format the route title. @see App::_formatRouteTitle()
     */
   protected function _loadSettings() {
     $settings = $this->_loadConfig("settings");
-    if ($settings) {
-      $this->_settings = array_replace_recursive($this->_settings, $settings);
-    }
+    if (!$settings) { return; }
 
-    // Make sure the base template name is defined.
-    if ($this->_settings["routeTitleFormatter"]) {
-      if (!is_callable($this->_settings["routeTitleFormatter"])) {
-        $this->_triggerError("The setting 'routeTitleFormatter' must be a callable.", true);
+    $errors = [];
+
+    // autoloadDirs: Make sure it's an array.
+    if ($settings["autoloadDirs"]) {
+      if (!is_array($settings["autoloadDirs"])) {
+        $errors["autoloadDirs"] = "Must be an array of folders.";
       }
     } else {
-      $this->_settings["routeTitleFormatter"] = function($routeName) {
-        // The route name must be in dash-case.
-        return ucwords(trim(str_replace("-", " ", $routeName)));
+      $settings["autoloadDirs"] = [];
+    }
+
+    // autoloader: Make sure it's callable.
+    if ($settings["autoloader"]) {
+      if (!is_callable($settings["autoloader"])) {
+        $errors["autoloader"] = "Must be callable.";
+      }
+    }
+
+    // baseMetaTitle: Verify it's defined.
+    if (!$settings["baseMetaTitle"]) {
+      $errors["baseMetaTitle"] = "Is required.";
+    }
+
+    /// baseTemplateName: Verify that the base template file exists.
+    if (!$this->templateExists($settings["baseTemplateName"])) {
+      $erros["baseTemplateName"] = "Base template '{$settings[baseTemplateName]}' not found.";
+    }
+
+    // baseUrl: Validate it starts with "http" and has no trailing slash.
+    $settings["baseUrl"] = rtrim($settings["baseUrl"], "/");
+    if (substr($settings["baseUrl"], 0, 4) !== "http") {
+      $errors["baseUrl"] = "Must start with \"http(s)://\".";
+    }
+
+    // metaTitleFormatter: Make sure it's a string or callable.
+    if ($settings["metaTitleFormatter"]) {
+      if (!is_string($settings["metaTitleFormatter"]) && !is_callable($settings["metaTitleFormatter"])) {
+        $errors["metaTitleFormatter"] = "Must be a string or callable.";
+      }
+    }
+
+    // routeTitleFormatter: Make sure the route title formatter is defined, and is callable.
+    if ($settings["routeTitleFormatter"]) {
+      if (!is_callable($settings["routeTitleFormatter"])) {
+        $errors["routeTitleFormatter"] = "Must be callable.";
+      }
+    } else {
+      $settings["routeTitleFormatter"] = function($routeName) {
+        return ucwords(trim(str_replace("-", " ", $routeName)));  // The route name must be in dash-case.
       };
     }
 
-    // Make sure the base template name is defined.
-    if (!$this->_settings["baseTemplateName"]) {
-      $this->_settings["baseTemplateName"] = static::DEFAULT_BASE_TEMPLATE_NAME;
+    // Trigger an error if there are problems in the file.
+    if (count($errors)) {
+      $message = "Please fix the following problems in `_private/config/settings.php`:\n";
+      foreach ($errors as $param => $error) {
+        $message .= "- `{$param}`: $error\n";
+      }
+      $this->_triggerError($message, true);
     }
 
-    // Verify that the base template file exists.
-    if (!$this->templateExists($this->_settings["baseTemplateName"])) {
-      $this->_triggerError("Base template '{$this->_settings["baseTemplateName"]}' not found.", true);
-    }
+    // Merge the settings from the config file with the default values.
+    $this->_settings = array_replace_recursive($this->_settings, $settings);
   }
 
   /**
