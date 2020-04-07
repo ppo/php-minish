@@ -2,7 +2,7 @@
 /**
  * Minimalist-ish PHP framework, in a single file, to easily create dynamic websites with clean URLs.
  *
- * @version 0.1.0
+ * @version 0.1.1
  * @link https://github.com/ppo/php-minish
  * @license https://github.com/ppo/LICENSE MIT
  * @author Pascal Polleunus
