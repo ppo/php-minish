@@ -94,9 +94,8 @@ ask_execute "Generate project skeleton?" \
   "sed -i \"\" -e \"s/example\.com/${answers[project_domain]}/g\" ${answers[project_dir]}/_private/config/settings.php" \
 
   "chmod 744 ${answers[project_dir]}/bin/{deploy,generate-sitemap.php,server}" \
-  "sed -i \"\" -e \"s/localhost/${answers[project_slug]}.test/g\" ${answers[project_dir]}/bin/server"
+  "sed -i \"\" -e \"s/localhost/${answers[project_slug]}.test/g\" ${answers[project_dir]}/bin/server" \
 
-ask_execute "Configure for deployment? (not actually deploying files)" \
   "mv ${answers[project_dir]}/bin/.env.example ${answers[project_dir]}/bin/.env" \
   "sed -i \"\" -e \"s/^DEPLOY_DST=.*$/DEPLOY_DST=${answers[project_rsync_dst]//\//\\/}/g\" ${answers[project_dir]}/bin/.env" \
   "sed -i \"\" -e \"s/example\.com/${answers[project_domain]}/g\" ${answers[project_dir]}/.htaccess"
