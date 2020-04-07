@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+[ $# == 0 ] && { echo "Usage: `basename $0` new_version"; exit 1; }
+
+declare -r __DIR__="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+
+minish_php=$(realpath ${__DIR__}/../minish.php)
+oldVersion=$(grep -E -m 1 "@version (.+)$" $minish_php | sed -E "s/^.+@version (.+)$/\1/")
+newVersion=$1
+message="Bump version: $oldVersion → $newVersion"
+
+sed -i "" -e "s/@version .*$/@version $newVersion/" $minish_php
+git add $minish_php
+git commit -m "$message"
+git tag -a "v${newVersion}" -m "$message"
