@@ -1,15 +1,38 @@
 #!/usr/bin/env bash
 
-[ $# == 0 ] && { echo "Usage: `basename $0` new_version"; exit 1; }
-
 declare -r __DIR__="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+
+ask_yesno() {
+  REPLY=
+  printf "$1 (y/n) "
+  while [ -z "$REPLY" ]; do
+    read -n 1
+    [[ "${REPLY,,}" =~ ^(y|n)$ ]] \
+      && { [ "${REPLY,,}" == "y" ] || REPLY="n"; } \
+      || { [ -n "$REPLY" ] && echo; REPLY=; printf "y or n? "; }
+  done
+  echo
+}
+
 
 minish_php=$(realpath ${__DIR__}/../minish.php)
 oldVersion=$(grep -E -m 1 "@version (.+)$" $minish_php | sed -E "s/^.+@version (.+)$/\1/")
-newVersion=$1
+
+echo "Current version: ${oldVersion}"
+read -p "New version: " newVersion
+echo
+
+tag="v${newVersion}"
 message="Bump version: $oldVersion → $newVersion"
 
 sed -i "" -e "s/@version .*$/@version $newVersion/" $minish_php
 git add $minish_php
 git commit -m "$message"
-git tag -a "v${newVersion}" -m "$message"
+git tag -a $tag -m "$message"
+
+echo
+ask_yesno "Push changes to repository?"
+if [ $REPLY == "y" ]; then
+  git push origin master
+  git push origin $tag
+fi
