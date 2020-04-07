@@ -44,11 +44,16 @@ class App {
 
   /**
     * @var array App settings, auto-loaded from `_private/config/settings.php`.
-    * @see App::_loadSettings()
     *
     * Supported values:
-    * - `autoloader` callable Autoloader function for `spl_autoload_register`. @see App:autoloader
-    * - `metaTitleFormatter` string|callable Handler to format the meta title. @see App::getMetaTitle()
+    * - `autoloader` callable Autoloader function for `spl_autoload_register`.
+    * - `baseMetaTitle` string The base HTML meta title. @see App:getBaseTemplatePath()
+    * - `baseTemplateName` string Name of the base template. @see App::getBaseTemplatePath()
+    * - `baseUrl` string The base URL of the site. Example: `https://example.com`.
+    * - `metaTitleFormatter` string|callable Handler to format the HTML meta title. @see App::getMetaTitle()
+    * - `routeTitleFormatter` string|callable Handler to format the route title. @see App::_formatRouteTitle()
+    *
+    * @see App::_loadSettings()
     */
   protected $_settings = [
     "autoloader" => "static::autoloader",
@@ -109,7 +114,7 @@ class App {
   /**
    * Handler to attempt to load undefined classes.
    *
-   * @param string The class name to load.
+   * @param string $class The class name to load.
    */
   public static function autoloader($class) {
     // Spit the class name by uppercase.
@@ -144,7 +149,7 @@ class App {
    * - As a string that will be formatted with `sprintf`.
    * - As a callable.
    *
-   * @param string Title of the current view.
+   * @param string $title Title of the current view.
    * @return string The value for the HTML meta title.
    */
   public function getMetaTitle($title) {
@@ -182,7 +187,7 @@ class App {
   /**
    * Return the path to the template file.
    *
-   * @name string The name of the template (i.e. the filename without its extension).
+   * @param string $name The name of the template (i.e. the filename without its extension).
    * @return string The path to the template file.
    */
   public function getTemplatePath($name) {
@@ -192,7 +197,7 @@ class App {
   /**
    * Return whether the template exists.
    *
-   * @name string The name of the template (i.e. the filename without its extension).
+   * @param string $name The name of the template (i.e. the filename without its extension).
    * @return bool Whether the template file exists.
    */
   public function templateExists($name) {
@@ -218,7 +223,7 @@ class App {
    *
    * @param string &$title Reference to the route title.
    * @param string $routeName The route name.
-   * @param boolean Whether to force formatting even if the title is set to `false`.
+   * @param boolean $force Whether to force formatting even if the title is set to `false`.
    */
   protected function _formatRouteTitle(&$title, $routeName, $force=false) {
     $formatter = $this->_settings["routeTitleFormatter"];
@@ -328,7 +333,6 @@ class App {
 
   /**
     * Retrieve the URL path from `$_SERVER`.
-    *
     * @see App::_cleanPath()
     */
   protected function _initRequestPath() {
@@ -542,7 +546,7 @@ class View {
   /**
    * Constructor.
    *
-   * @templateName string The name of the main template.
+   * @param string $templateName The name of the main template.
    */
   public function __construct($templateName=null) {
     $this->setMainTemplate($templateName);
@@ -552,6 +556,9 @@ class View {
    * Execute the view.
    *
    * Lifecycle: Initialize data and render the base template.
+   *
+   * @param App $app Instance of the app.
+   * @param array $data View data.
    */
   public function __invoke($app, $data=null) {
     $this->_init($app, $data);
@@ -573,6 +580,8 @@ class View {
 
   /**
    * Define the main template path.
+   *
+   * @param string $templateName Name of the main template.
    */
   public function setMainTemplate($templateName) {
     $this->_mainTemplateName = $templateName;
@@ -595,9 +604,10 @@ class View {
   /**
    * Return the path to the template file.
    *
-   * @name string The name of the template (i.e. the filename without its extension).
-   * @return string The path to the template file.
    * @see App::getTemplatePath()
+   *
+   * @param string $name The name of the template (i.e. the filename without its extension).
+   * @return string The path to the template file.
    */
   protected function _getTemplatePath($name) {
     return $name ? $this->_private->getTemplatePath($name) : null;
@@ -618,9 +628,10 @@ class View {
   /**
    * Return whether the template exists.
    *
-   * @name string The name of the template (i.e. the filename without its extension).
-   * @return bool Whether the template file exists.
    * @see App::templateExists()
+   *
+   * @param string $name The name of the template (i.e. the filename without its extension).
+   * @return bool Whether the template file exists.
    */
   protected function _templateExists($name) {
     return $this->_private->templateExists($name);
