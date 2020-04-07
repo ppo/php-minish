@@ -6,6 +6,7 @@
 __DIR__="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
 [ -f "$__DIR__/.env" ] && source "$__DIR__/.env"
-[ -z "$MINISH_DEPLOY_DST" ] && { echo "ERROR: 'MINISH_DEPLOY_DST' is not defined and no '.env' file."; exit 1; }
+[ -z "$MINISH_DEPLOY_DST" ] && { echo "ERROR: 'MINISH_DEPLOY_DST' is not defined (in env or '.env' file)."; exit 1; }
+
 
 rsync -au --delete --progress --exclude-from="$__DIR__/.deployignore" "$@" "$__DIR__/../" "${MINISH_DEPLOY_DST%/}/"
