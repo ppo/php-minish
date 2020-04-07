@@ -172,9 +172,10 @@ class App {
   /**
    * Return a given setting.
    *
+   * @param mixed $default Default value.
    * @return mixed|null The requested setting, or null if not defined.
    */
-  public function getSetting($name) {
+  public function getSetting($name, $default=null) {
     return $this->_settings[$name];
   }
 
@@ -260,7 +261,7 @@ class App {
     if (isset($config["redirect"])) {
       $url = $config["redirect"];
       if (!isLocal() && substr($url, 0, 4) !== "http") {
-        $url = ($this->_settings["baseUrl"] ?: "") . $url;
+        $url = $this->getSetting("baseUrl", "") . $url;
       }
       header("Location: {$url}");
       die;
