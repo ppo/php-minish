@@ -21,6 +21,11 @@ return [
     "template" => "example-template",  # Default is `template`, so must be defined.
   ],
 
+  "redirect-to-template" => [
+    "path" => "/redirect-to-template",
+    "redirect" => "/template",
+  ],
+
   "extended-view" => [
     "path" => "/extended-view",
     "title" => "Extended View",
