@@ -46,6 +46,7 @@ class App {
     * @var array App settings, auto-loaded from `_private/config/settings.php`.
     *
     * Supported values:
+    * - `autoloadDirs` array List of folders for `App::autoloader` to look for classes.
     * - `autoloader` callable Autoloader function for `spl_autoload_register`.
     * - `baseMetaTitle` string The base HTML meta title. @see App:getBaseTemplatePath()
     * - `baseTemplateName` string Name of the base template. @see App::getBaseTemplatePath()
@@ -117,18 +118,29 @@ class App {
    * @param string $class The class name to load.
    */
   public static function autoloader($class) {
-    // Spit the class name by uppercase.
-    $chunks = preg_split("/(?=[A-Z])/", $class, -1, PREG_SPLIT_NO_EMPTY);
+    // Handle custom views.
+    if (substr($class, -4) === "View") {
+      // Spit the class name by uppercase.
+      $chunks = preg_split("/(?=[A-Z])/", $class, -1, PREG_SPLIT_NO_EMPTY);
 
-    // Use the last part pluralized as folder and the rest as dash-case file name.
-    $folder = array_pop($chunks) . "s";
-    $file = join("-", $chunks);
+      // Use the last part pluralized as folder and the rest as dash-case file name.
+      $folder = array_pop($chunks) . "s";
+      $file = join("-", $chunks);
 
-    // Define the lowercased path under the `PRIVATE_DIR` folder.
-    $path = strtolower(PRIVATE_DIR . "/{$folder}/{$file}.php");
+      // Define the lowercased path under the `PRIVATE_DIR` folder.
+      $path = strtolower(PRIVATE_DIR . "/{$folder}/{$file}.php");
 
-    // Import the file if it exists.
-    if (file_exists($path)) { include $path; }
+      // Import the file if it exists.
+      if (file_exists($path)) { require_once $path; }
+      return;
+    }
+
+    // Handle other classes. Namespace supported.
+    $dirs = array_merge([static::PRIVATE_DIR], $this->getSetting("autoloadDirs", []));
+    foreach ($dirs as $dir) {
+      $path = $dir . str_replace("\\", "/", $class) . ".php";
+      if (file_exists($path)) { require_once $path; break; }
+    }
   }
 
   /**
