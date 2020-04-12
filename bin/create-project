@@ -91,6 +91,7 @@ ask_execute "Generate project skeleton?" \
   "cp -r ${answers[minish_git_dir]}/skeleton ${answers[project_dir]}" \
   "cp ${answers[minish_git_dir]}/minish.php ${answers[project_dir]}/_private/" \
   "sed -i \"\" -e \"s/Default Minish/${answers[project_meta_title]}/g\" ${answers[project_dir]}/_private/config/settings.php" \
+  "sed -i \"\" -e \"s/Default Minish/${answers[project_meta_title]}/g\" ${answers[project_dir]}/_private/500.html" \
   "sed -i \"\" -e \"s/example\.com/${answers[project_domain]}/g\" ${answers[project_dir]}/_private/config/settings.php" \
 
   "chmod 744 ${answers[project_dir]}/bin/{deploy,generate-sitemap.php,server}" \

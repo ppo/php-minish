@@ -25,6 +25,24 @@ if (!defined("ENV")) {
 }
 
 
+define("MINISH_500_ERRORS", E_ALL & ~E_NOTICE);
+ini_set("error_reporting", MINISH_500_ERRORS);
+
+// Activate all error reporting on local, and deactivate all otherwise.
+if (ENV === "local") {
+  ini_set("display_errors", 1);
+  ini_set("display_startup_errors", 1);
+  ini_set("html_errors", 1);
+  ini_set("error_log", 0);
+} else {
+  set_error_handler("minishErrorHandler");
+  set_exception_handler("minishExceptionHandler");
+  ini_set("display_errors", 0);
+  ini_set("display_startup_errors", 0);
+  ini_set("html_errors", 0);
+}
+
+
 // Make sure the path to the private folder is defined. */
 if (!defined("PRIVATE_DIR")) {
   throw new Exception("Cannot locate the private folder. Please define it using a `PRIVATE_DIR` constant.");
@@ -315,7 +333,7 @@ class App {
 
     // If the route is wrong, render the 500 error page.
     $this->_triggerError("Wrong configuration for '{$this->routeName}' in routes.");
-    return $this->_getErrorView(500);
+    minishRender500();
   }
 
   /**
@@ -418,6 +436,15 @@ class App {
 
       // If `title` is not defined, convert the route name.
       $this->_formatRouteTitle($routes[$routeName]["title"], $routeName);
+    }
+
+    // On local env, auto-add a route to debug the page.
+    if (ENV === "local") {
+      $routes["__error500__"] = [
+        "path" => $this->_cleanPath("/__debug__/500"),
+        "baseTemplate" => "__500__",
+        "template" => "__500__",
+      ];
     }
 
     $this->_routes = $routes;
@@ -705,4 +732,26 @@ class View {
   protected function _templateExists($name) {
     return $this->_private->templateExists($name);
   }
+}
+
+
+
+# ======================================================================================================================
+# ERROR HANDLERS
+# ======================================================================================================================
+
+function minishRender500() {
+  header("Status: 500 Internal Server Error");
+  include PRIVATE_DIR . "/500.html";
+  die;
+}
+
+function minishErrorHandler($errNo, $errStr, $errFile=null, $errLine=null, $errContext=null) {
+  if ($errNo & MINISH_500_ERRORS) {
+    minishRender500();
+  }
+}
+
+function minishExceptionHandler($exception) {
+   minishRender500();
 }
