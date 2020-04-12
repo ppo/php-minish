@@ -8,6 +8,23 @@
  * @author Pascal Polleunus
  */
 
+
+# ======================================================================================================================
+# INITIALIZATION…
+# ======================================================================================================================
+
+// If not done, define the ENV we're running on.
+if (!defined("ENV")) {
+  if (getenv("ENV")) {
+    define("ENV", getenv("ENV"));
+  } elseif ($_SERVER["SERVER_NAME"] === "localhost" || substr($_SERVER["SERVER_NAME"], -5) == ".test") {
+    define("ENV", "local");
+  } else {
+    define("ENV", "production");
+  }
+}
+
+
 // Make sure the path to the private folder is defined. */
 if (!defined("PRIVATE_DIR")) {
   throw new Exception("Cannot locate the private folder. Please define it using a `PRIVATE_DIR` constant.");
@@ -265,7 +282,7 @@ class App {
     // Check if it's a redirection.
     if (isset($config["redirect"])) {
       $url = $config["redirect"];
-      if (!isLocal() && substr($url, 0, 4) !== "http") {
+      if (ENV !== "local" && substr($url, 0, 4) !== "http") {
         $url = $this->getSetting("baseUrl", "") . $url;
       }
       header("Location: {$url}");
@@ -686,15 +703,4 @@ class View {
   protected function _templateExists($name) {
     return $this->_private->templateExists($name);
   }
-}
-
-
-
-# ======================================================================================================================
-# UTILS
-# ======================================================================================================================
-
-function isLocal() {
-  return $_SERVER["SERVER_NAME"] === "localhost"
-    || substr($_SERVER["SERVER_NAME"], -5) == ".test";
 }
