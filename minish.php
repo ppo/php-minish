@@ -446,7 +446,7 @@ class App {
 
     /// baseTemplateName: Verify that the base template file exists.
     if (!$this->templateExists($settings["baseTemplateName"])) {
-      $erros["baseTemplateName"] = "Base template '{$settings[baseTemplateName]}' not found.";
+      $erros["baseTemplateName"] = "Base template '{$settings["baseTemplateName"]}' not found.";
     }
 
     // baseUrl: Validate it starts with "http" and has no trailing slash.
