@@ -154,7 +154,9 @@ class App {
    * @return string The name of the base template.
    */
   public function getBaseTemplatePath() {
-    return $this->getTemplatePath($this->_settings["baseTemplateName"]);
+    return $this->getTemplatePath(
+      $this->_routes[$this->routeName]["baseTemplate"] ?: $this->_settings["baseTemplateName"]
+    );
   }
 
   /**
