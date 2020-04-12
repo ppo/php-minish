@@ -65,7 +65,7 @@ return [
 <p><a href="<?php echo $_routes["home"]["path"]; ?>">Back to home</a></p>
 ```
 
-3. Customize the look in `assets/main.css`.
+3. Customize the look in `static/main.css`.
 
 
 > 🎓 You can find [more details about how this framework works](#-learning-phpminish) here below.
@@ -126,7 +126,7 @@ PROJECT_ROOT/
 │   │   └── home.php      # Template for the home page (loaded in the `main block`).
 │   ├── .htaccess         # Apache config denying access to this folder.
 │   └── minish.php        # The framework!
-├── assets/               # Folder: all the static files (images, css, js).
+├── static/               # Folder: all the static files (images, css, js).
 │   └── main.css          # Site styles.
 ├── .htaccess             # Apache config for clean URLs and other stuff.
 └── index.php             # The default handler launching the app.
@@ -266,7 +266,7 @@ return [
   "foo" => "bar",
   "myArray" => ["a" => 1, "b" => 2],
   "isTrue" => true,
-  "logoUrl" => "/assets/images/logo.png",
+  "logoUrl" => "/static/images/logo.png",
   "now" => time(),
 ];
 ```
@@ -315,7 +315,7 @@ PROJECT_ROOT/
 │   │   └── foo-bar.php         # Custom FooBarView.
 │   ├── .htaccess               # Apache config denying access to this folder.
 │   └── minish.php              # The framework!
-├── assets/                     # Folder: all your static files (images, css, js).
+├── static/                     # Folder: all your static files (images, css, js).
 │   └── main.css                # Site styles.
 ├── .htaccess                   # Apache config for clean URLs and other stuff.
 └── index.php                   # The default handler launching the app.

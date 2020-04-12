@@ -7,7 +7,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sanitize.css@11.0.0/sanitize.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
-    <link rel="stylesheet" href="/assets/minish.css">
+    <link rel="stylesheet" href="/static/minish.css">
   </head>
   <body>
     <?php include "_/header.php"; ?>
