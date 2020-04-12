@@ -1,0 +1,10 @@
+# This is for the `deploy` script.
+# Files that rsync must include, ignoring all others.
+
+_private/
+static/
+.htaccess
+index.php
+sitemap.xml
+
+- /*

@@ -1,12 +1,39 @@
 #!/usr/bin/env bash
 
-# `$@` is passed at the end of the `rsync` command.
-# So that you can for example run a `deploy --dry-run`.
-
 __DIR__="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
 [ -f "$__DIR__/.env" ] && source "$__DIR__/.env"
-[ -z "$MINISH_DEPLOY_DST" ] && { echo "ERROR: 'MINISH_DEPLOY_DST' is not defined (in env or '.env' file)."; exit 1; }
+[ -z "$MINISH_DEPLOY_DST" ] && { echo "ERROR: 'MINISH_DEPLOY_DST' is not defined and no '.env' file."; exit 1; }
+
+SRC="$__DIR__/../"
+DST="${MINISH_DEPLOY_DST%/}/"
 
 
-rsync -au --delete --progress --exclude-from="$__DIR__/.deployignore" "$@" "$__DIR__/../" "${MINISH_DEPLOY_DST%/}/"
+ask_yesno() {
+  REPLY=
+  printf "$1 (y/n) "
+  while [ -z "$REPLY" ]; do
+    read -n 1
+    [[ "${REPLY,,}" =~ ^(y|n)$ ]] \
+      && { [ "${REPLY,,}" == "y" ] || REPLY="n"; } \
+      || { [ -n "$REPLY" ] && echo; REPLY=; printf "y or n? "; }
+  done
+  echo
+}
+
+exec_rsync() {
+  rsync "$@" -au --delete --out-format="%o %n" --include-from="$__DIR__/.deploy-files" "$SRC" "$DST"
+}
+
+[ "$1" == "f" ] && REPLY="y"
+
+if [ "$REPLY" != "y" ]; then
+  output=$(exec_rsync --dry-run)
+  [ -z "$output" ] && { echo "Nothing changed."; exit 0; }
+
+  echo -e "\033[37m\033[1mThe following would be executed…\033[0m\n$output\n"
+
+  ask_yesno "\033[37m\033[1mDo you want to execute this?\033[0m"
+fi
+
+[ "$REPLY" == "y" ] && exec_rsync --progress
