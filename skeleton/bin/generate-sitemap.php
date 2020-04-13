@@ -27,4 +27,4 @@ $app = new App(true);
 
 echo "Sitemap successfully generated: {$sitemapPath}\n\n" .
   "When it's online, you can alert Google that the sitemap has been updated" .
-  "by opening the following URL:\n  $googlePingUrl";
+  "by opening the following URL:\n  curl $googlePingUrl";
