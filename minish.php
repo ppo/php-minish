@@ -1,6 +1,7 @@
 <?php
 /**
- * Minimalist-ish PHP framework, in a single file, to easily create dynamic websites with clean URLs.
+ * Minimalist-ish PHP framework, in a single file, to easily create dynamic websites
+ * with clean URLs.
  *
  * @version 0.1.1
  * @link https://github.com/ppo/php-minish
@@ -9,15 +10,22 @@
  */
 
 
-# ======================================================================================================================
-# INITIALIZATION…
-# ======================================================================================================================
+# ==================================================================================================
+# INITIALIZATION
+# ==================================================================================================
 
-// If not done, define the ENV we're running on.
+/** Error codes that will be handled by our custom error handler. */
+define("MINISH_500_ERRORS", E_ALL & ~E_NOTICE);
+
+
+// If not done, define the ENV we’re running on.
 if (!defined("ENV")) {
   if (getenv("ENV")) {
     define("ENV", getenv("ENV"));
-  } elseif ($_SERVER["SERVER_NAME"] === "localhost" || substr($_SERVER["SERVER_NAME"], -5) == ".test") {
+  } elseif (
+    $_SERVER["SERVER_NAME"] === "localhost"
+    || substr($_SERVER["SERVER_NAME"], -5) == ".test"
+  ) {
     define("ENV", "local");
   } else {
     define("ENV", "production");
@@ -25,10 +33,9 @@ if (!defined("ENV")) {
 }
 
 
-define("MINISH_500_ERRORS", E_ALL & ~E_NOTICE);
+// Activate all error reporting on local, and deactivate all otherwise.
 ini_set("error_reporting", MINISH_500_ERRORS);
 
-// Activate all error reporting on local, and deactivate all otherwise.
 if (ENV === "local") {
   ini_set("display_errors", 1);
   ini_set("display_startup_errors", 1);
@@ -45,20 +52,29 @@ if (ENV === "local") {
 
 // Make sure the path to the private folder is defined. */
 if (!defined("PRIVATE_DIR")) {
-  throw new Exception("Cannot locate the private folder. Please define it using a `PRIVATE_DIR` constant.");
+  throw new Exception(
+    "Cannot locate the private folder. Please define it using a `PRIVATE_DIR` constant."
+  );
 }
 
 
-# ======================================================================================================================
+# ==================================================================================================
 # APP
-# ======================================================================================================================
+# ==================================================================================================
 
 /**
  * The `App` is the main component that boostraps the application.
  *
  * It detects the current path, find the current route, and execute its view.
- * This class is automatically instantiated and called at the end of this file so that you only need to require
- * this file in the `index.php`.
+ *
+ * Usage:
+ *   ```
+ *   define("PRIVATE_DIR", __DIR__ . "/_private");
+ *   define("PUBLIC_DIR", __DIR__);
+ *   require_once PRIVATE_DIR . "/minish.php";
+ *   $app = new App();
+ *   $app->run();
+ *   ```
  */
 class App {
   /** Folder containing the config files. */
@@ -86,7 +102,8 @@ class App {
   ];
 
   /**
-    * @var array Routes configuration (name, path, template|view, title), auto-loaded from `_private/config/routes.php`.
+    * @var array Routes configuration (name, path, template|view, title), auto-loaded from
+    *   `_private/config/routes.php`.
     * @see App::_loadRoutes()
     */
   protected $_routes;
@@ -104,17 +121,19 @@ class App {
   public $routeName;
 
 
-  # PUBLIC -------------------------------------------------------------------------------------------------------------
+  # PUBLIC -----------------------------------------------------------------------------------------
 
   /**
    * Constructor.
    *
-  * @param boolean $isConsole Whether we're running in console mode.
+  * @param boolean $isConsole Whether we’re running in console mode.
   */
 
   public function __construct($isConsole=false) {
     $this->_loadSettings();
-    if ($this->_settings["autoloader"]) { spl_autoload_register($this->_settings["autoloader"]); }
+    if ($this->_settings["autoloader"]) {
+      spl_autoload_register($this->_settings["autoloader"]);
+    }
 
     if (!$isConsole) {
       $this->_loadRoutes();
@@ -198,7 +217,7 @@ class App {
     // Check whether there is a formatter defined in the settings.
     $metaTitleFormatter = $this->_settings["metaTitleFormatter"];
     if ($metaTitleFormatter) {
-      // If it's a callable…
+      // If it’s a callable…
       if (is_callable($metaTitleFormatter)) {
         return $metaTitleFormatter($baseTitle, $routeTitle);
       }
@@ -242,7 +261,7 @@ class App {
   }
 
 
-  # PROTECTED ----------------------------------------------------------------------------------------------------------
+  # PROTECTED --------------------------------------------------------------------------------------
 
   /**
    * Harmonize the path.
@@ -271,11 +290,12 @@ class App {
   }
 
   /**
-    * Retrieve the view to handle an error, if the template exists, otherwise just throw an exception.
+    * Retrieve the view to handle an error, if the template exists, otherwise just throw an
+    * exception.
     *
     * @param int $status The error HTTP status code (404 or 500).
     * @return View The view to execute, an error (404 or 500) one in case of problem.
-    * @throws Exception If there's no template for that error status.
+    * @throws Exception If there’s no template for that error status.
     */
   protected function _getErrorView($status) {
     http_response_code($status);
@@ -299,7 +319,7 @@ class App {
     // Retrieve the route config.
     $config = $this->_routes[$this->routeName];
 
-    // Check if it's a redirection.
+    // Check if it’s a redirection.
     if (isset($config["redirect"])) {
       $url = $config["redirect"];
       if (ENV !== "local" && substr($url, 0, 4) !== "http") {
@@ -309,7 +329,7 @@ class App {
       die;
     }
 
-    // Check if there's a view configured.
+    // Check if there’s a view configured.
     // It can be a callable or the name of a View class (string).
     if (isset($config["view"])) {
       return is_callable($config["view"]) ? $config["view"] : new $config["view"]();
@@ -339,13 +359,15 @@ class App {
   /**
     * Initialize the data for the view.
     *
-    * It's composed of (the forced values are prefixed with `_` to avoid name collisions with the initial data):
-    * - The initial data, using their own names. @see App::$_data
-    * - `_metaTitle`: The formatted HTML meta title. @see App::getMetaTitle()
-    * - `_requestPath`: The URL/request path. @see App::$requestPath
-    * - `_routeName`: The name of the current route. @see App::$routeName
-    * - `_routeConfig`: The config of the current route.
-    * - `_routes`: The routes config, without their `view` and `template` attributes. @see App::$_routes
+    * It’s composed of (the forced values are prefixed with `_` to avoid name collisions
+    * with the initial data):
+    *   - The initial data, using their own names. @see App::$_data
+    *   - `_metaTitle`: The formatted HTML meta title. @see App::getMetaTitle()
+    *   - `_requestPath`: The URL/request path. @see App::$requestPath
+    *   - `_routeName`: The name of the current route. @see App::$routeName
+    *   - `_routeConfig`: The config of the current route.
+    *   - `_routes`: The routes config, without their `view` and `template` attributes.
+    *     @see App::$_routes
     */
   protected function _getViewData() {
     $data = $this->_loadConfig("data");
@@ -411,15 +433,19 @@ class App {
     * Load routes configuration from `_private/config/routes.php`.
     *
     *  Each route must have the following structure:
-    *  - The index key is the `route-name`. /!\ It must be in dash-case.
-    *  - `path`: URL path associated with this route. Default: `/$routeName`.
-    *  - `title`: Title of the page, used in the HTML meta title or to generate navigation links.
-    *      - If `false`, it won't be used in the HTML meta title but well in the routes passed to the view.
+    *    - The index key is the `route-name`. /!\ It must be in dash-case.
+    *    - `path`: URL path associated with this route. Default: `/$routeName`.
+    *    - `title`: Title of the page, used in the HTML meta title or to generate navigation links.
+    *      - If `false`, it won’t be used in the HTML meta title but well in the routes passed to
+    *        the view.
     *      - If empty, it is generated using `settings.routeTitleFormatter($routeName)`.
-    *  - `view`: The view to render the content. It can be defined as follows:
-    *      - As a class name: `FooBarView` (default autoload: `Foo-Bar` & `View+s` => `_private/views/foo-bar.php`).
-    *      - As a callable: `[$obj, 'method']`, `Class::method`, or `function($app, $data=null) { echo 'content'; }`.
-    *  - `template`: If not view, the default `View` is used with this template name (from `_private/templates/{$name}.php`).
+    *    - `view`: The view to render the content. It can be defined as follows:
+    *      - As a class name: `FooBarView`
+    *        (default autoload: `Foo-Bar` & `View+s` => `_private/views/foo-bar.php`).
+    *      - As a callable: `[$obj, "method"]`, `Class::method`, or
+    *        `function($app, $data=null) { echo "content"; }`.
+    *    - `template`: If not view, the default `View` is used with this template name
+    *      (from `_private/templates/{$name}.php`).
     *      - If not defined, use the `route-name` as template name if that file exists.
     */
   protected function _loadRoutes() {
@@ -430,7 +456,9 @@ class App {
       // If `path` is not defined, generate one based on the route name.
       if (!$routes[$routeName]["path"]) {
         $routes[$routeName]["path"] = "/{$routeName}";
-      } else { // Else, ensure the path is harmonized.
+
+      // Else, ensure the path is harmonized.
+      } else {
         $routes[$routeName]["path"] = $this->_cleanPath($routes[$routeName]["path"]);
       }
 
@@ -454,14 +482,18 @@ class App {
     * Load app settings from `_private/config/settings.php`.
     *
     * Supported values:
-    * - `autoloadDirs` array List of folders for `App::autoloader` to look for classes.
-    * - `autoloader` callable Custom autoloader function for `spl_autoload_register()`.
-    * - `baseMetaTitle` string Required. The base HTML meta title. @see App:getBaseTemplatePath()
-    * - `baseTemplateName` string Name of the base template. Default: `"_base"`. @see App::getBaseTemplatePath()
-    * - `baseUrl` string The base URL of the site. Required to generate `sitemap.xml`. Example: `https://example.com`.
-    * - `metaTitleFormatter` string|callable Handler to format the HTML meta title. Default: `'%2$s | %1$s'`.
-    *   @see App::getMetaTitle()
-    * - `routeTitleFormatter` callable Handler to format the route title. @see App::_formatRouteTitle()
+    *   - `autoloadDirs` array List of folders for `App::autoloader` to look for classes.
+    *   - `autoloader` callable Custom autoloader function for `spl_autoload_register()`.
+    *   - `baseMetaTitle` string Required. The base HTML meta title. @see App:getBaseTemplatePath()
+    *   - `baseTemplateName` string Name of the base template. Default: `"_base"`.
+    *     @see App::getBaseTemplatePath()
+    *   - `baseUrl` string The base URL of the site. Required to generate `sitemap.xml`.
+    *     Example: `https://example.com`.
+    *   - `metaTitleFormatter` string|callable Handler to format the HTML meta title.
+    *     Default: `'%2$s | %1$s'`.
+    *     @see App::getMetaTitle()
+    *   - `routeTitleFormatter` callable Handler to format the route title.
+    *     @see App::_formatRouteTitle()
     */
   protected function _loadSettings() {
     $settings = $this->_loadConfig("settings");
@@ -469,7 +501,7 @@ class App {
 
     $errors = [];
 
-    // autoloadDirs: Make sure it's an array.
+    // `autoloadDirs`: Make sure it’s an array.
     if ($settings["autoloadDirs"]) {
       if (!is_array($settings["autoloadDirs"])) {
         $errors["autoloadDirs"] = "Must be an array of folders.";
@@ -478,44 +510,48 @@ class App {
       $settings["autoloadDirs"] = [];
     }
 
-    // autoloader: Make sure it's callable.
+    // `autoloader`: Make sure it’s callable.
     if ($settings["autoloader"]) {
       if (!is_callable($settings["autoloader"])) {
         $errors["autoloader"] = "Must be callable.";
       }
     }
 
-    // baseMetaTitle: Verify it's defined.
+    // `baseMetaTitle`: Verify it’s defined.
     if (!$settings["baseMetaTitle"]) {
       $errors["baseMetaTitle"] = "Is required.";
     }
 
-    /// baseTemplateName: Verify that the base template file exists.
+    /// `baseTemplateName`: Verify that the base template file exists.
     if (!$this->templateExists($settings["baseTemplateName"])) {
       $erros["baseTemplateName"] = "Base template '{$settings["baseTemplateName"]}' not found.";
     }
 
-    // baseUrl: Validate it starts with "http" and has no trailing slash.
+    // `baseUrl`: Validate it starts with “http” and has no trailing slash.
     $settings["baseUrl"] = rtrim($settings["baseUrl"], "/");
     if (substr($settings["baseUrl"], 0, 4) !== "http") {
       $errors["baseUrl"] = "Must start with \"http(s)://\".";
     }
 
-    // metaTitleFormatter: Make sure it's a string or callable.
+    // `metaTitleFormatter`: Make sure it’s a string or callable.
     if ($settings["metaTitleFormatter"]) {
-      if (!is_string($settings["metaTitleFormatter"]) && !is_callable($settings["metaTitleFormatter"])) {
+      if (
+        !is_string($settings["metaTitleFormatter"])
+        && !is_callable($settings["metaTitleFormatter"])
+      ) {
         $errors["metaTitleFormatter"] = "Must be a string or callable.";
       }
     }
 
-    // routeTitleFormatter: Make sure the route title formatter is defined, and is callable.
+    // `routeTitleFormatter`: Make sure the route title formatter is defined, and is callable.
     if ($settings["routeTitleFormatter"]) {
       if (!is_callable($settings["routeTitleFormatter"])) {
         $errors["routeTitleFormatter"] = "Must be callable.";
       }
     } else {
       $settings["routeTitleFormatter"] = function($routeName) {
-        return ucwords(trim(str_replace("-", " ", $routeName)));  // The route name must be in dash-case.
+        // The route name must be in dash-case.
+        return ucwords(trim(str_replace("-", " ", $routeName)));
       };
     }
 
@@ -545,22 +581,25 @@ class App {
   }
 
 
-  # CONSOLE ------------------------------------------------------------------------------------------------------------
+  # CONSOLE ----------------------------------------------------------------------------------------
 
   /**
    * Generate a `sitemap.xml` based on the routes configuration.
    */
   public function generateSitemap() {
-    // Make sure the path to the public folder is defined. */
+    // Make sure the path to the public folder is defined.
     if (!defined("PUBLIC_DIR")) {
-      throw new Exception("Cannot locate the public folder. Please define it using a `PUBLIC_DIR` constant.");
+      throw new Exception(
+        "Cannot locate the public folder. Please define it using a `PUBLIC_DIR` constant."
+      );
     }
 
-    // Make sure the base URL of the website is defined. */
+    // Make sure the base URL of the website is defined.
     $baseUrl = $this->_settings["baseUrl"];
     if (!$baseUrl) {
       throw new Exception(
-        "The base URL is not defined in the app settings. Please define `baseUrl` in `config/settings.php`."
+        "The base URL is not defined in the app settings. Please define `baseUrl` in " .
+        "`config/settings.php`."
       );
     }
 
@@ -575,6 +614,7 @@ class App {
 
     foreach ($this->_routes as $routeName => $routeConfig) {
       if ($this->templateExists($routeName)) {
+        // @TODO $lastMod = max(base template, route page)
         $stat = stat($this->getTemplatePath($routeName));
         $lastMod = date("Y-m-d", $stat["mtime"]);
         fwrite($file,
@@ -588,7 +628,7 @@ class App {
       }
     }
 
-    fwrite($file, '</urlset>');
+    fwrite($file, "</urlset>");
     fclose($file);
 
     return [$sitemapPath, $googlePingUrl];
@@ -597,9 +637,9 @@ class App {
 
 
 
-# ======================================================================================================================
-# VIEW
-# ======================================================================================================================
+# ==================================================================================================
+# VIEWS
+# ==================================================================================================
 
 /**
  * The `View` component handles templates and may do some processing before.
@@ -611,7 +651,7 @@ class View {
   /**
    * Path to the base template.
    *
-   * Remark: Not defined as a constant because it's retrieve from the app settings.
+   * Remark: Not defined as a constant because it’s retrieve from the app settings.
    */
   public $BASE_TEMPLATE_PATH;
 
@@ -637,7 +677,7 @@ class View {
   protected $_data = [];
 
 
-  # PUBLIC -------------------------------------------------------------------------------------------------------------
+  # PUBLIC -----------------------------------------------------------------------------------------
 
   /**
    * Constructor.
@@ -684,7 +724,7 @@ class View {
   }
 
 
-  # PROTECTED ----------------------------------------------------------------------------------------------------------
+  # PROTECTED --------------------------------------------------------------------------------------
 
   /**
    * Return the data for the template.
@@ -735,10 +775,28 @@ class View {
 }
 
 
+/**
+ * Allows to render `Twig` templates instead of simple PHP ones.
+ */
+class TwigView extends View {
+  /**
+   * Render the view/template.
+   */
+  public function render() {
+    $loader = new \Twig\Loader\FilesystemLoader("templates");
+    $twig = new \Twig\Environment($loader, [
+        "cache" => "cache",
+    ]);
 
-# ======================================================================================================================
+    echo $twig->render($this->BASE_TEMPLATE_PATH, $this->_getContext());
+  }
+}
+
+
+
+# ==================================================================================================
 # ERROR HANDLERS
-# ======================================================================================================================
+# ==================================================================================================
 
 function minishRender500() {
   header("Status: 500 Internal Server Error");
