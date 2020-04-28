@@ -9,7 +9,7 @@ RewriteCond %{HTTP:X-Forwarded-SSL} !on
 RewriteCond %{REQUEST_URI} !^/\.well\-known/
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
-# Redirect all sub-domains (configured to be served by this code) to the main domain.
+# Redirect all other domains configured to be served by this code to the main domain.
 RewriteCond %{HTTP_HOST} !^example.com$ [NC]
 RewriteRule ^(.*)$ https://example.com/ [R=301,L]
 
