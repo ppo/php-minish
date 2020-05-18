@@ -5,7 +5,7 @@
  *
  * @version 0.1.1
  * @link https://github.com/ppo/php-minish
- * @license https://github.com/ppo/LICENSE MIT
+ * @license https://github.com/ppo/php-minish/LICENSE MIT
  * @author Pascal Polleunus
  */
 
@@ -178,7 +178,7 @@ class App {
     }
 
     // Handle other classes. Namespace supported.
-    $dirs = array_merge([static::PRIVATE_DIR], $this->getSetting("autoloadDirs", []));
+    $dirs = array_merge([PRIVATE_DIR], $this->getSetting("autoloadDirs", []));
     foreach ($dirs as $dir) {
       $path = $dir . str_replace("\\", "/", $class) . ".php";
       if (file_exists($path)) { require_once $path; break; }
@@ -619,7 +619,7 @@ class App {
         $lastMod = date("Y-m-d", $stat["mtime"]);
         fwrite($file,
           "<url>" .
-            "<loc>{$baseUrl}{$routeConfig[path]}</loc>" .
+            "<loc>{$baseUrl}{$routeConfig['path']}</loc>" .
             "<lastmod>{$lastMod}</lastmod>" .
             "<changefreq>monthly</changefreq>" .
             "<priority>1</priority>" .
