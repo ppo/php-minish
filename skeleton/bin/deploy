@@ -38,9 +38,9 @@ if [ "$REPLY" != "y" ]; then
   output=$(exec_rsync --dry-run)
   [ -z "$output" ] && { echo "Nothing changed."; exit 0; }
 
-  echo -e "\033[37m\033[1mThe following would be executed…\033[0m\n$output\n"
+  echo -e "\e[37;1mThe following would be executed…\e[0m\n$output\n"
 
-  ask_yesno "\033[37m\033[1mDo you want to execute this?\033[0m"
+  ask_yesno "\e[37;1mDo you want to execute this?\e[0m"
 fi
 
 [ "$REPLY" == "y" ] && exec_rsync --progress
