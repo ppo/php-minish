@@ -8,6 +8,8 @@ __DIR__="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 SRC="$__DIR__/../"
 DST="${MINISH_DEPLOY_DST%/}/"
 
+[ "$1" == "y" ] && REPLY="y"
+
 
 ask_yesno() {
   REPLY=
@@ -25,7 +27,10 @@ exec_rsync() {
   rsync "$@" -au --delete --out-format="%o %n" --include-from="$__DIR__/.deploy-files" "$SRC" "$DST"
 }
 
-[ "$1" == "f" ] && REPLY="y"
+
+find "$SRC" -name .DS_Store -delete
+
+"$__DIR__/sass" deploy
 
 if [ "$REPLY" != "y" ]; then
   output=$(exec_rsync --dry-run)
