@@ -8,4 +8,5 @@ PUBLIC_DIR=$(rp "$__DIR__/..")
 [ -z "$MINISH_PROJECT_SLUG" ] && { echo "ERROR: 'MINISH_PROJECT_SLUG' is not defined."; exit 1; }
 
 
-php -S ${MINISH_PROJECT_SLUG}.test:8000 -t "$PUBLIC_DIR"
+echo -e "\e[37;1mWatching SCSS folder and running local server…\e[0m\n"
+parallel -u ::: "$__DIR__/sass" "php -S ${MINISH_PROJECT_SLUG}.test:8000 -t \"$PUBLIC_DIR\""
