@@ -14,5 +14,15 @@
     <main>
       <?php include $_mainTemplate; ?>
     </main>
+
+    <?php if (ENV === "production" && $_settings["googleAnalyticsID"]): ?>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo $_settings["googleAnalyticsID"]; ?>"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '<?php echo $_settings["googleAnalyticsID"]; ?>');
+      </script>
+    <?php endif; ?>
   </body>
 </html>
