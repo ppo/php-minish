@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
-__DIR__="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+rp() { cd "$1" >/dev/null 2>&1 && pwd; }
+__DIR__=$(rp "$(dirname "${BASH_SOURCE[0]}")")
+PUBLIC_DIR=$(rp "$__DIR__/..")
 
 [ -f "$__DIR__/.env" ] && source "$__DIR__/.env"
-[ -z "$MINISH_PROJECT_SLUG" ] && { echo "ERROR: 'MINISH_PROJECT_SLUG' is not defined and no '.env' file."; exit 1; }
+[ -z "$MINISH_PROJECT_SLUG" ] && { echo "ERROR: 'MINISH_PROJECT_SLUG' is not defined."; exit 1; }
 
 
-php -S ${MINISH_PROJECT_SLUG}.test:8000 -t "$__DIR__"/..
+php -S ${MINISH_PROJECT_SLUG}.test:8000 -t "$PUBLIC_DIR"
