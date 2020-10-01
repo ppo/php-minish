@@ -1,0 +1,30 @@
+@mixin container {
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 0 var(--spacing);
+  position: relative;
+  width: 100%;
+}
+
+
+@mixin list-inline($-spacing: $spacing) {
+  @include list-unstyled;
+
+  margin: 0;
+  padding: 0;
+
+  > li {
+    display: inline-block;
+
+    &:not(:first-child) {
+      margin-left: $-spacing;
+    }
+  }
+}
+
+
+@mixin list-unstyled {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+}

@@ -8,7 +8,7 @@
     <?php if ($_routeConfig["description"]): ?>
       <meta name="description" content="<?php echo htmlspecialchars($_routeConfig["description"]); ?>">
     <?php endif; ?>
-    <link rel="stylesheet" href="/static/main.css">
+    <link rel="stylesheet" href="/static/css/main.css">
   </head>
   <body>
     <main>

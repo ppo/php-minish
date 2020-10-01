@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+__DIR__="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+SCSS_DIR="$__DIR__/../src/scss"
+CSS_DIR="$__DIR__/../static/css"
+
+
+[ "$1" == "deploy" ] && OPTIONS="--no-source-map" || OPTIONS="--source-map --watch"
+
+
+rm "$CSS_DIR"/main.css*
+sass $OPTIONS "$SCSS_DIR/main.scss":"$CSS_DIR/main.css"
