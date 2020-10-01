@@ -368,6 +368,7 @@ class App {
     *   - `_routeConfig`: The config of the current route.
     *   - `_routes`: The routes config, without their `view` and `template` attributes.
     *     @see App::$_routes
+    *   - `_settings`: Data passed as-is to the view from the setting `viewSettings`.
     */
   protected function _getViewData() {
     $data = $this->_loadConfig("data");
@@ -386,6 +387,8 @@ class App {
     $data["_requestPath"] = $this->requestPath;
     $data["_routeName"] = $this->routeName;
     $data["_routeConfig"] = $data["_routes"][$this->routeName];
+
+    $data["_settings"] = $this->getSetting("viewData", []);
 
     return $data;
   }

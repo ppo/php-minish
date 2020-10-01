@@ -21,4 +21,9 @@ return [
 
   // `routeTitleFormatter` string|callable Handler to format the route title.
   // "routeTitleFormatter" => function($routeName) { … },
+
+  // `viewSettings` array Data passed as-is to the view as `_settings`.
+  // "viewSettings" => [
+  //   "googleAnalyticsID" => "",
+  // ],
 ];
