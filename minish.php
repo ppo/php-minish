@@ -373,6 +373,8 @@ class App {
   protected function _getViewData() {
     $data = $this->_loadConfig("data");
 
+    $data["_baseUrl"] = $this->getSetting("baseUrl");
+
     // Export the formatted HTML meta title.
     $data["_metaTitle"] = $this->getMetaTitle($this->_routes[$this->routeName]["title"]);
 
