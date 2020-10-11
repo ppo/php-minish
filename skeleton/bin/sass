@@ -6,7 +6,7 @@ PUBLIC_DIR=$(rp "$__DIR__/..")
 
 SCSS_DIR="$PUBLIC_DIR/src/scss"
 CSS_DIR="$PUBLIC_DIR/static/css"
-BASE_FILENAME="main"
+BASE_FILENAME="app"
 
 [ $(wc -l < "$CSS_DIR/$BASE_FILENAME.css") == "1" ] && MINIFIED=1 || MINIFIED=0
 

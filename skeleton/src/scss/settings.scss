@@ -1,0 +1,14 @@
+$container-width: 1200px;
+
+$primary-color: #00f;
+
+
+// CSS VARS ========================================================================================
+
+:root {
+  --spacing: 1rem;
+
+  --primary-color: #{$primary-color};
+  --text-color: #222;
+  --background-color: #ff;
+}

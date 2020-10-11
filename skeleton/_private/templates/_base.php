@@ -8,7 +8,8 @@
     <?php if ($_routeConfig["description"]): ?>
       <meta name="description" content="<?php echo htmlspecialchars($_routeConfig["description"]); ?>">
     <?php endif; ?>
-    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?display=swap&family=Roboto:wght@400;700">
+    <link rel="stylesheet" href="/static/css/app.css">
   </head>
   <body>
     <main>

@@ -1,13 +1,30 @@
-@mixin container {
-  margin: 0 auto;
-  max-width: 1200px;
-  padding: 0 var(--spacing);
-  position: relative;
-  width: 100%;
+@mixin clearfix {
+  overflow: auto;
+
+  &::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
 }
 
 
-@mixin list-inline($-spacing: $spacing) {
+@mixin container {
+  max-width: $container-width;
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--spacing);
+}
+
+
+@mixin letter-spacing($spacing) {
+  letter-spacing: $spacing;
+  margin-right: -#{$spacing};
+}
+
+
+@mixin list-inline($spacing: var(--spacing)) {
   @include list-unstyled;
 
   margin: 0;
@@ -17,7 +34,18 @@
     display: inline-block;
 
     &:not(:first-child) {
-      margin-left: $-spacing;
+      margin-left: #{$spacing};
+    }
+  }
+}
+
+
+@mixin list-uninline {
+  > li {
+    display: block;
+
+    &:not(:first-child) {
+      margin-left: 0;
     }
   }
 }
@@ -27,4 +55,17 @@
   list-style: none;
   margin-left: 0;
   padding-left: 0;
+}
+
+
+@mixin transition(
+  $props,
+  $duration: 300ms,
+  $timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94),
+  $delay: 0s
+) {
+  transition-property: #{$props};
+  transition-duration: $duration;
+  transition-timing-function: $timing-function;
+  transition-delay: $delay;
 }
