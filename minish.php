@@ -581,7 +581,7 @@ class App {
     *
     * @param string $message The error message.
     * @param boolean $throw Whether to throw an exception.
-    * @throws Exception If askd for (not default behavior).
+    * @throws Exception If asked for (not default behavior).
     */
   protected function _triggerError($message, $throw=false) {
     trigger_error($message);
