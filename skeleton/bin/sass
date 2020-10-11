@@ -6,10 +6,17 @@ PUBLIC_DIR=$(rp "$__DIR__/..")
 
 SCSS_DIR="$PUBLIC_DIR/src/scss"
 CSS_DIR="$PUBLIC_DIR/static/css"
+BASE_FILENAME="main"
 
+[ $(wc -l < "$CSS_DIR/$BASE_FILENAME.css") == "1" ] && MINIFIED=1 || MINIFIED=0
 
-[ "$1" == "deploy" ] && OPTIONS="--no-source-map" || OPTIONS="--source-map --watch"
+if [ "$1" == "deploy" ]; then
+  [ "$MINIFIED" == 1 ] && exit 0
+  rm -f "$CSS_DIR/$BASE_FILENAME.css.map"
+  OPTIONS="--no-source-map --style=compressed"
+else
+  OPTIONS="--watch --embed-source-map"
+  [ "$MINIFIED" == 1 ] && rm "$CSS_DIR/$BASE_FILENAME.css"
+fi
 
-
-rm -f "$CSS_DIR"/main.css*
-sass $OPTIONS "$SCSS_DIR/main.scss":"$CSS_DIR/main.css"
+sass $OPTIONS "$SCSS_DIR/$BASE_FILENAME.scss":"$CSS_DIR/$BASE_FILENAME.css"
