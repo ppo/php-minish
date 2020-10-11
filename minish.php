@@ -593,8 +593,12 @@ class App {
 
   /**
    * Generate a `sitemap.xml` based on the routes configuration.
+   *
+   * @param boolean $pingGoogle Whether to ping Google if the sitemap changed. Default: `true`.
+   * @return array The triplet [path to sitemap, sitemap changed?, Google ping URL].
+   * @throws Exception If the base URL is not defined.
    */
-  public function generateSitemap() {
+  public function generateSitemap($pingGoogle=true) {
     // Make sure the path to the public folder is defined.
     if (!defined("PUBLIC_DIR")) {
       throw new Exception(
@@ -614,8 +618,11 @@ class App {
     $this->_loadRoutes();
 
     $sitemapPath = static::SITEMAP_PATH;
-    $sitemapUrl = "{$baseUrl}/sitemap.xml";
+    $sitemapFilename = basename($sitemapPath);
+    $sitemapUrl = "{$baseUrl}/{$$sitemapFilename}";
     $googlePingUrl = static::GOOGLE_PING_URL . "?sitemap=" . rawurlencode($sitemapUrl);
+
+    $checksum = md5_file($sitemapPath);
 
     $file = fopen($sitemapPath, "w");
     fwrite($file, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
@@ -639,7 +646,24 @@ class App {
     fwrite($file, "</urlset>");
     fclose($file);
 
-    return [$sitemapPath, $googlePingUrl];
+    $sitemapChanged = md5_file($sitemapPath) !== $checksum;
+    if (!$sitemapChanged) {
+      echo "Sitemap has not changed.\n";
+    } else {
+      echo "\n\e[32mSitemap successfully generated:\e[0m {$sitemapPath}\n\n";
+
+      if ($pingGoogle) {
+        $response = file_get_contents($googlePingUrl, "r");
+        echo "Google has been notified to crawl it. \e[37;1mDon't forget to deploy ASAP\e[0m.\n";
+      } else {
+        echo "When it's online, you can alert Google that the sitemap has been updated" .
+          "by opening the following URL:\n  \e[37;1mcurl $googlePingUrl\e[0m\n";
+      }
+
+      echo "\n";
+    }
+
+    return [$sitemapPath, $sitemapChanged, $googlePingUrl];
   }
 }
 
