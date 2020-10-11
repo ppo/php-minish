@@ -12,10 +12,12 @@ return [
   // `baseTemplateName` string Name of the base template.
   // "baseMetaTitle" => "_base",
 
-  // `baseUrl` string The base URL of the site. Required to generate `sitemap.xml`. Example: `https://example.com`.
   "baseUrl" => "https://example.be",
+  // `baseUrl` string The base URL of the site. Required to generate `sitemap.xml`.
+  // Example: `https://example.com`.
 
-  // `metaTitleFormatter` string|callable Handler to format the HTML meta title. Default: `'%2$s | %1$s'`.
+  // `metaTitleFormatter` string|callable Handler to format the HTML meta title.
+  // Default: `'%2$s | %1$s'`.
   // "metaTitleFormatter" => '%1$s › %2$s',
   // "metaTitleFormatter" => function($baseTitle, $routeTitle) { … },
 

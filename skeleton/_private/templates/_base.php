@@ -16,7 +16,9 @@
     </main>
 
     <?php if (ENV === "production" && $_settings["googleAnalyticsID"]): ?>
-      <script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo $_settings["googleAnalyticsID"]; ?>"></script>
+      <script
+        src="https://www.googletagmanager.com/gtag/js?id=<?php echo $_settings["googleAnalyticsID"]; ?>"
+        async></script>
       <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
