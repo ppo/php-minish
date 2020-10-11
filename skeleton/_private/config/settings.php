@@ -7,14 +7,14 @@ return [
   // "autoloader" => function($class) { … },
 
   // `baseMetaTitle` string Required. The base HTML meta title.
-  "baseMetaTitle" => "Default Minish",
+  "baseMetaTitle" => "%PROJECT_META_TITLE%",
 
   // `baseTemplateName` string Name of the base template.
   // "baseMetaTitle" => "_base",
 
-  "baseUrl" => "https://example.be",
   // `baseUrl` string The base URL of the site. Required to generate `sitemap.xml`.
   // Example: `https://example.com`.
+  "baseUrl" => "https://%DOMAIN%",
 
   // `metaTitleFormatter` string|callable Handler to format the HTML meta title.
   // Default: `'%2$s | %1$s'`.

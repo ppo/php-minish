@@ -98,14 +98,14 @@ fi
 ask_execute "Generate project skeleton?" \
   "cp -r ${answers[minish_dir]}/skeleton/. ${answers[project_dir]}" \
   "cp ${answers[minish_dir]}/minish.php ${answers[project_dir]}/_private/" \
-  "sed -i \"\" -e \"s/Default Minish/${answers[project_meta_title]}/g\" ${answers[project_dir]}/_private/config/settings.php" \
-  "sed -i \"\" -e \"s/Default Minish/${answers[project_meta_title]}/g\" ${answers[project_dir]}/_private/500.html" \
-  "sed -i \"\" -e \"s/example\.com/${answers[project_domain]}/g\" ${answers[project_dir]}/_private/config/settings.php" \
+  "sed -i \"\" -e \"s/%PROJECT_META_TITLE%/${answers[project_meta_title]}/g\" ${answers[project_dir]}/_private/config/settings.php" \
+  "sed -i \"\" -e \"s/%PROJECT_META_TITLE%/${answers[project_meta_title]}/g\" ${answers[project_dir]}/_private/500.html" \
+  "sed -i \"\" -e \"s/%DOMAIN%/${answers[project_domain]}/g\" ${answers[project_dir]}/_private/config/settings.php" \
   "chmod 744 ${answers[project_dir]}/bin/{deploy,generate-sitemap.php,sass,server}" \
   "mv ${answers[project_dir]}/bin/.env.example ${answers[project_dir]}/bin/.env" \
-  "sed -i \"\" -e \"s/project-slug/${answers[project_slug]}/g\" ${answers[project_dir]}/bin/.env" \
-  "sed -i \"\" -e \"s/^MINISH_DEPLOY_DST=.*$/MINISH_DEPLOY_DST=${answers[project_rsync_dst]//\//\\/}/g\" ${answers[project_dir]}/bin/.env" \
-  "sed -i \"\" -e \"s/example\.com/${answers[project_domain]}/g\" ${answers[project_dir]}/.htaccess"
+  "sed -i \"\" -e \"s/%PROJECT_SLUG%/${answers[project_slug]}/g\" ${answers[project_dir]}/bin/.env" \
+  "sed -i \"\" -e \"s/%DEPLOY_DST%/${answers[project_rsync_dst]//\//\\/}/g\" ${answers[project_dir]}/bin/.env" \
+  "sed -i \"\" -e \"s/%DOMAIN%/${answers[project_domain]}/g\" ${answers[project_dir]}/.htaccess"
 
 
 printf "$(c gB)Project successfully created in $(c y)${answers[project_dir]}$(c)\n\n"
