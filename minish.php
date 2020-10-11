@@ -23,8 +23,11 @@ if (!defined("ENV")) {
   if (getenv("ENV")) {
     define("ENV", getenv("ENV"));
   } elseif (
-    $_SERVER["SERVER_NAME"] === "localhost"
-    || substr($_SERVER["SERVER_NAME"], -5) == ".test"
+    array_key_exists("SERVER_NAME", $_SERVER)
+    && (
+      $_SERVER["SERVER_NAME"] === "localhost"
+      || substr($_SERVER["SERVER_NAME"], -5) == ".test"
+    )
   ) {
     define("ENV", "local");
   } else {
