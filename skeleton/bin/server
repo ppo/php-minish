@@ -7,6 +7,9 @@ PUBLIC_DIR=$(rp "$__DIR__/..")
 [ -f "$__DIR__/.env" ] && source "$__DIR__/.env"
 [ -z "$MINISH_PROJECT_SLUG" ] && { echo "ERROR: 'MINISH_PROJECT_SLUG' is not defined."; exit 1; }
 
+[ "$1" == "ext" ] && HOST="0.0.0.0" || HOST="${MINISH_PROJECT_SLUG}.test"
 
-echo -e "\e[37;1mWatching SCSS folder and running local server…\e[0m\n"
-parallel -u ::: "$__DIR__/sass" "php -S ${MINISH_PROJECT_SLUG}.test:8000 -t \"$PUBLIC_DIR\""
+echo -e "\e[37;1mWatching SCSS folder and running local server…\e[0m"
+[ "$HOST" == "0.0.0.0" ] && echo "External: http://$(scutil --get LocalHostName).local:8000"
+echo
+parallel -u ::: "$__DIR__/sass" "php -S $HOST:8000 -t \"$PUBLIC_DIR\""
