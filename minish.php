@@ -388,7 +388,7 @@ class App {
     $data["_routeName"] = $this->routeName;
     $data["_routeConfig"] = $data["_routes"][$this->routeName];
 
-    $data["_settings"] = $this->getSetting("viewData", []);
+    $data["_settings"] = $this->getSetting("viewSettings", []);
 
     return $data;
   }
