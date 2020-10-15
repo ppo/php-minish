@@ -4,7 +4,7 @@
 _private/
 static/
 .htaccess
-favicon.ico
+favicon.*
 index.php
 sitemap.xml
 
