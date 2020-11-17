@@ -1,3 +1,10 @@
+<?php
+// Google Fonts URL without "display=swap".
+$GFONTS_CSS = "https://fonts.googleapis.com/css2?family=Roboto:wght@400;700";
+$META_DESCRIPTION = $_routeConfig["description"]
+  ? $_routeConfig["description"]
+  : $_settings["metaDescription"];
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -6,10 +13,16 @@
     <title><?php echo $_metaTitle; ?></title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <?php if ($_routeConfig["description"]): ?>
-      <meta name="description" content="<?php echo htmlspecialchars($_routeConfig["description"]); ?>">
+      <meta name="description" content="<?php echo htmlspecialchars($META_DESCRIPTION); ?>">
     <?php endif; ?>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?display=swap&family=Roboto:wght@400;700">
-    <link rel="stylesheet" href="/static/css/app.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="<?php echo $GFONTS_CSS; ?>&display=swap" media="print"
+      onload="this.media='all'">
+    <link rel="preload" href="<?php echo $GFONTS_CSS; ?>" as="style">
+    <noscript>
+      <link rel="stylesheet" href="<?php echo $GFONTS_CSS; ?>&display=swap">
+    </noscript>
+    <link rel="stylesheet" href="<?php echo $_basePath; ?>/static/css/app.css">
   </head>
   <body>
     <main>
