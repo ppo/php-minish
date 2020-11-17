@@ -3,7 +3,7 @@
  * Minimalist-ish PHP framework, in a single file, to easily create dynamic websites
  * with clean URLs.
  *
- * @version 0.1.1
+ * @version 0.1.2
  * @link https://github.com/ppo/php-minish
  * @license https://github.com/ppo/php-minish/LICENSE MIT
  * @author Pascal Polleunus
@@ -355,7 +355,8 @@ class App {
     }
 
     // If the route is wrong, render the 500 error page.
-    $this->_triggerError("Wrong configuration for '{$this->routeName}' in routes.");
+    $message = "Wrong configuration for '{$this->routeName}' in routes.";
+    trigger_error($message);
     minishRender500();
   }
 
@@ -403,7 +404,14 @@ class App {
     * @see App::_cleanPath()
     */
   protected function _initRequestPath() {
-    $this->requestPath = $this->_cleanPath($_SERVER["SCRIPT_URL"] ?: $_SERVER["PATH_INFO"]);
+    $path = $_SERVER["REQUEST_URI"] ?? $_SERVER["SCRIPT_URL"] ?? $_SERVER["PATH_INFO"];
+    if (!$path) {
+      $message = "Current path cannot be retrieved from `\$_SERVER`.";
+      trigger_error($message);
+      throw new Exception($message);
+    }
+
+    $this->requestPath = $this->_cleanPath($path);
   }
 
   /**
@@ -569,23 +577,12 @@ class App {
       foreach ($errors as $param => $error) {
         $message .= "- `{$param}`: $error\n";
       }
-      $this->_triggerError($message, true);
+      trigger_error($message);
+      throw new Exception($message);
     }
 
     // Merge the settings from the config file with the default values.
     $this->_settings = array_replace_recursive($this->_settings, $settings);
-  }
-
-  /**
-    * Trigger an error message, and optionally throw an exception.
-    *
-    * @param string $message The error message.
-    * @param boolean $throw Whether to throw an exception.
-    * @throws Exception If asked for (not default behavior).
-    */
-  protected function _triggerError($message, $throw=false) {
-    trigger_error($message);
-    if ($throw) { throw new Exception($message); }
   }
 
 
@@ -619,7 +616,7 @@ class App {
 
     $sitemapPath = static::SITEMAP_PATH;
     $sitemapFilename = basename($sitemapPath);
-    $sitemapUrl = "{$baseUrl}/{$$sitemapFilename}";
+    $sitemapUrl = "{$baseUrl}/{$sitemapFilename}";
     $googlePingUrl = static::GOOGLE_PING_URL . "?sitemap=" . rawurlencode($sitemapUrl);
 
     $checksum = md5_file($sitemapPath);
