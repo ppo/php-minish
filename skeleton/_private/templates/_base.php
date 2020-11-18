@@ -13,7 +13,7 @@ $META_DESCRIPTION = $_routeConfig["description"]
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?php echo $_metaTitle; ?></title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <?php if ($_routeConfig["description"]): ?>
+    <?php if ($META_DESCRIPTION): ?>
       <meta name="description" content="<?php echo htmlspecialchars($META_DESCRIPTION); ?>">
     <?php endif; ?>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
