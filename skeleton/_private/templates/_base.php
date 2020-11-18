@@ -1,6 +1,7 @@
 <?php
 // Google Fonts URL without "display=swap".
-$GFONTS_CSS = "https://fonts.googleapis.com/css2?family=Roboto:wght@400;700";
+$GFONTS_CSS = "https://fonts.googleapis.com/css2" .
+  "?family=Roboto:wght@400;700";
 $META_DESCRIPTION = $_routeConfig["description"]
   ? $_routeConfig["description"]
   : $_settings["metaDescription"];
@@ -23,6 +24,11 @@ $META_DESCRIPTION = $_routeConfig["description"]
       <link rel="stylesheet" href="<?php echo $GFONTS_CSS; ?>&display=swap">
     </noscript>
     <link rel="stylesheet" href="<?php echo $_basePath; ?>/static/css/app.css">
+    <!--[if lt IE 9]>
+      <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"
+        integrity="sha256-9uAoNWHdszsUDhSXf/rVcWOqKPfi5/8V5R4UdbZle2A="
+        crossorigin="anonymous"></script>
+    <![endif]-->
   </head>
   <body>
     <main>

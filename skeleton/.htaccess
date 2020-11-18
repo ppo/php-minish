@@ -15,6 +15,7 @@ RewriteRule ^(.*)$ https://example.com/ [R=301,L]
 
 # Serve directly only the following:
 RewriteCond %{REQUEST_URI} !^/static/
+RewriteCond %{REQUEST_URI} !^/favicon.png$
 RewriteCond %{REQUEST_URI} !^/sitemap.xml$
 
 # Handle everything else via `index.php`.
