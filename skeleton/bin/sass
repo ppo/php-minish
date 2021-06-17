@@ -10,6 +10,8 @@ BASE_FILENAME="app"
 SCSS_FILE="$SCSS_DIR/$BASE_FILENAME.scss"
 CSS_FILE="$CSS_DIR/$BASE_FILENAME.css"
 
+[ ! -f "$SCSS_FILE" ] && exit 0
+
 MINIFIED=0
 [ -f "$CSS_FILE" ] && [ $(wc -l < "$CSS_FILE") == "1" ] && MINIFIED=1
 
