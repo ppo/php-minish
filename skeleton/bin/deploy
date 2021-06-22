@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 rp() { cd "$1" >/dev/null 2>&1 && pwd; }
-__DIR__=$(rp "$(dirname "${BASH_SOURCE[0]}")")
-PUBLIC_DIR=$(rp "$__DIR__/..")
+__DIR__=$( rp "$( dirname "${BASH_SOURCE[0]}" )" )
+PUBLIC_DIR=$( rp "${__DIR__}/.." )
 
-[ -f "$__DIR__/.env" ] && source "$__DIR__/.env"
+[ -f "${__DIR__}/.env" ] && source "${__DIR__}/.env"
 [ -z "$MINISH_DEPLOY_DST" ] && { echo "ERROR: 'MINISH_DEPLOY_DST' is not defined."; exit 1; }
 
-SRC="$PUBLIC_DIR/"
+SRC="${PUBLIC_DIR}/"
 DST="${MINISH_DEPLOY_DST%/}/"
 
 [ "$1" == "y" ] && REPLY="y"
@@ -26,19 +26,19 @@ ask_yesno() {
 }
 
 exec_rsync() {
-  rsync "$@" -au --delete --out-format="%o %n" --include-from="$__DIR__/.deploy-files" "$SRC" "$DST"
+  rsync "$@" -au --delete --out-format="%o %n" --include-from="${__DIR__}/.deploy-files" "$SRC" "$DST"
 }
 
 
 find "$SRC" -name .DS_Store -delete
 
-"$__DIR__/sass" deploy
+"${__DIR__}/sass" deploy
 
 if [ "$REPLY" != "y" ]; then
-  output=$(exec_rsync --dry-run)
+  output=$( exec_rsync --dry-run )
   [ -z "$output" ] && { echo "Nothing changed."; exit 0; }
 
-  echo -e "\e[37;1mThe following would be executed…\e[0m\n$output\n"
+  echo -e "\e[37;1mThe following would be executed…\e[0m\n${output}\n"
 
   ask_yesno "\e[37;1mDo you want to execute this?\e[0m"
 fi

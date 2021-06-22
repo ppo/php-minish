@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
 
 rp() { cd "$1" >/dev/null 2>&1 && pwd; }
-__DIR__=$(rp "$(dirname "${BASH_SOURCE[0]}")")
-PUBLIC_DIR=$(rp "$__DIR__/..")
+__DIR__=$( rp "$( dirname "${BASH_SOURCE[0]}" )" )
+PUBLIC_DIR=$( rp "${__DIR__}/.." )
 
-SCSS_DIR="$PUBLIC_DIR/src/scss"
-CSS_DIR="$PUBLIC_DIR/static/css"
+SCSS_DIR="${PUBLIC_DIR}/src/scss"
+CSS_DIR="${PUBLIC_DIR}/static/css"
 BASE_FILENAME="app"
-SCSS_FILE="$SCSS_DIR/$BASE_FILENAME.scss"
-CSS_FILE="$CSS_DIR/$BASE_FILENAME.css"
+SCSS_FILE="${SCSS_DIR}/${BASE_FILENAME}.scss"
+CSS_FILE="${CSS_DIR}/${BASE_FILENAME}.css"
 
 [ ! -f "$SCSS_FILE" ] && exit 0
 
 MINIFIED=0
-[ -f "$CSS_FILE" ] && [ $(wc -l < "$CSS_FILE") == "1" ] && MINIFIED=1
+[ -f "$CSS_FILE" ] && [ $( wc -l < "$CSS_FILE" ) == "1" ] && MINIFIED=1
 
 if [ "$1" == "deploy" ]; then
   [ "$MINIFIED" == 1 ] && exit 0
-  rm -f "$CSS_FILE.map"
+  rm -f "${CSS_FILE}.map"
   OPTIONS="--no-source-map --style=compressed"
 else
   OPTIONS="--watch --embed-source-map"

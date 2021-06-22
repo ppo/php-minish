@@ -1,24 +1,24 @@
 #!/usr/bin/env bash
 
 rp() { cd "$1" >/dev/null 2>&1 && pwd; }
-__DIR__=$(rp "$(dirname "${BASH_SOURCE[0]}")")
-PUBLIC_DIR=$(rp "$__DIR__/..")
-SCSS_DIR="$PUBLIC_DIR/src/scss"
+__DIR__=$( rp "$( dirname "${BASH_SOURCE[0]}" )" )
+PUBLIC_DIR=$( rp "${__DIR__}/.." )
+SCSS_DIR="${PUBLIC_DIR}/src/scss"
 
-[ -f "$__DIR__/.env" ] && source "$__DIR__/.env"
+[ -f "${__DIR__}/.env" ] && source "${__DIR__}/.env"
 [ -z "$MINISH_PROJECT_SLUG" ] && { echo "ERROR: 'MINISH_PROJECT_SLUG' is not defined."; exit 1; }
 
 [ "$1" == "ext" ] && HOST="0.0.0.0" || HOST="${MINISH_PROJECT_SLUG}.test"
 
 
-  [ "$HOST" == "0.0.0.0" ] && MSG_EXTERNAL="External: http://$( scutil --get LocalHostName ).local:8000\n"
+[ "$HOST" == "0.0.0.0" ] && MSG_EXTERNAL="External: http://$( scutil --get LocalHostName ).local:8000\n"
 
 if [ -d "$SCSS_DIR" ]; then
   echo -e "\e[37;1mWatching SCSS folder and running local server…\e[0m"
   echo -e "${MSG_EXTERNAL}"
-  parallel -u ::: "$__DIR__/sass" "php -S $HOST:8000 -t \"$PUBLIC_DIR\""
+  parallel -u ::: "${__DIR__}/sass" "php -S ${HOST}:8000 -t \"$PUBLIC_DIR\""
 else
   echo -e "\e[37;1mRunning local server…\e[0m"
   echo -e "${MSG_EXTERNAL}"
-  php -S $HOST:8000 -t "$PUBLIC_DIR"
+  php -S ${HOST}:8000 -t "$PUBLIC_DIR"
 fi
