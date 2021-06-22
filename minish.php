@@ -619,7 +619,7 @@ class App {
     $sitemapUrl = "{$baseUrl}/{$sitemapFilename}";
     $googlePingUrl = static::GOOGLE_PING_URL . "?sitemap=" . rawurlencode($sitemapUrl);
 
-    $checksum = md5_file($sitemapPath);
+    $checksum = file_exists($sitemapPath) ? md5_file($sitemapPath) : NULL;
 
     $file = fopen($sitemapPath, "w");
     fwrite($file, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
