@@ -5,6 +5,8 @@ define("PRIVATE_DIR", PUBLIC_DIR . "/_private");
 
 require_once PRIVATE_DIR . "/minish.php";
 
+define("IS_DEPLOY_MODE", $argv[1] === "deploy");
+
 
 $app = new App(true);
 [$sitemapPath, $changed, $googlePingUrl] = $app->generateSitemap();

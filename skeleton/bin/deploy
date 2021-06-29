@@ -32,6 +32,7 @@ exec_rsync() {
 
 find "$SRC" -name .DS_Store -delete
 
+"${__DIR__}/generate-sitemap.php" deploy
 "${__DIR__}/sass" deploy
 
 if [ "$REPLY" != "y" ]; then

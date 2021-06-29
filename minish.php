@@ -599,6 +599,8 @@ class App {
    * @throws Exception If the base URL is not defined.
    */
   public function generateSitemap($pingGoogle=true) {
+    $isDeployMode = $argv[1] === "deploy";
+
     // Make sure the path to the public folder is defined.
     if (!defined("PUBLIC_DIR")) {
       throw new Exception(
@@ -622,17 +624,19 @@ class App {
     $sitemapUrl = "{$baseUrl}/{$sitemapFilename}";
     $googlePingUrl = static::GOOGLE_PING_URL . "?sitemap=" . rawurlencode($sitemapUrl);
 
-    $checksum = file_exists($sitemapPath) ? md5_file($sitemapPath) : NULL;
+    // Use a temporary file to generate the current sitemap so that the file doesn't unnecessarily
+    // change (cf. file tracking/syncing).
+    $tmpFile = tmpfile();
+    $tmpFilePath = stream_get_meta_data($tmpFile)["uri"];
 
-    $file = fopen($sitemapPath, "w");
-    fwrite($file, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
-
+    // Generate current sitemap.
+    fwrite($tmpFile, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
     foreach ($this->_routes as $routeName => $routeConfig) {
       if ($this->templateExists($routeName)) {
         // @TODO $lastMod = max(base template, route page)
         $stat = stat($this->getTemplatePath($routeName));
         $lastMod = date("Y-m-d", $stat["mtime"]);
-        fwrite($file,
+        fwrite($tmpFile,
           "<url>" .
             "<loc>{$baseUrl}{$routeConfig['path']}</loc>" .
             "<lastmod>{$lastMod}</lastmod>" .
@@ -642,26 +646,31 @@ class App {
         );
       }
     }
+    fwrite($tmpFile, "</urlset>");
 
-    fwrite($file, "</urlset>");
-    fclose($file);
+    // Check if content changed.
+    $currentChecksum = file_exists($sitemapPath) ? md5_file($sitemapPath) : NULL;
+    $sitemapChanged = md5_file($tmpFilePath) !== $currentChecksum;
 
-    $sitemapChanged = md5_file($sitemapPath) !== $checksum;
     if (!$sitemapChanged) {
-      echo "Sitemap has not changed.\n";
+      if (!IS_DEPLOY_MODE) { echo "Sitemap has not changed.\n"; }
     } else {
-      echo "\n\e[32mSitemap successfully generated:\e[0m {$sitemapPath}\n\n";
+      copy($tmpFilePath, $sitemapPath);
+      echo "\e[32mSitemap successfully generated:\e[0m {$sitemapPath}\n";
 
       if ($pingGoogle) {
         $response = file_get_contents($googlePingUrl, "r");
-        echo "Google has been notified to crawl it. \e[37;1mDon't forget to deploy ASAP\e[0m.\n";
+        echo "Google has been notified to crawl the new sitemap.";
+        if (!IS_DEPLOY_MODE) { echo " \e[37;1mDon't forget to deploy ASAP\e[0m."; }
+        echo "\n";
       } else {
         echo "When it's online, you can alert Google that the sitemap has been updated" .
           "by opening the following URL:\n  \e[37;1mcurl $googlePingUrl\e[0m\n";
       }
-
-      echo "\n";
     }
+
+    // Close temporary file (and auto-deleted).
+    fclose($tmpFile);
 
     return [$sitemapPath, $sitemapChanged, $googlePingUrl];
   }
