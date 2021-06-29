@@ -405,6 +405,9 @@ class App {
     */
   protected function _initRequestPath() {
     $path = $_SERVER["REQUEST_URI"] ?? $_SERVER["SCRIPT_URL"] ?? $_SERVER["PATH_INFO"];
+    $uri = parse_url("http://example.com" . $path);
+    $path = $uri["path"] ?: "";
+
     if (!$path) {
       $message = "Current path cannot be retrieved from `\$_SERVER`.";
       trigger_error($message);
