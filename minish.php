@@ -632,19 +632,21 @@ class App {
     // Generate current sitemap.
     fwrite($tmpFile, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
     foreach ($this->_routes as $routeName => $routeConfig) {
-      if ($this->templateExists($routeName)) {
-        // @TODO $lastMod = max(base template, route page)
-        $stat = stat($this->getTemplatePath($routeName));
-        $lastMod = date("Y-m-d", $stat["mtime"]);
-        fwrite($tmpFile,
-          "<url>" .
-            "<loc>{$baseUrl}{$routeConfig['path']}</loc>" .
-            "<lastmod>{$lastMod}</lastmod>" .
-            "<changefreq>monthly</changefreq>" .
-            "<priority>1</priority>" .
-          "</url>"
-        );
+      if ($routeConfig["sitemap"] === FALSE || !$this->templateExists($routeName)) {
+        continue;
       }
+
+      // @TODO $lastMod = max(base template, route page)
+      $stat = stat($this->getTemplatePath($routeName));
+      $lastMod = date("Y-m-d", $stat["mtime"]);
+      fwrite($tmpFile,
+        "<url>" .
+          "<loc>{$baseUrl}{$routeConfig['path']}</loc>" .
+          "<lastmod>{$lastMod}</lastmod>" .
+          "<changefreq>monthly</changefreq>" .
+          "<priority>1</priority>" .
+        "</url>"
+      );
     }
     fwrite($tmpFile, "</urlset>");
 
