@@ -194,9 +194,10 @@ class App {
    * @return string The name of the base template.
    */
   public function getBaseTemplatePath() {
-    return $this->getTemplatePath(
-      ($this->_routes[$this->routeName]["baseTemplate"] ?? NULL) ?: ($this->_settings["baseTemplateName"] ?? NULL)
-    );
+    $defaultBaseTemplate = $this->_settings["baseTemplateName"] ?? NULL;
+    $routeBaseTemplate = $this->_routes[$this->routeName]["baseTemplateName"] ?? NULL;
+
+    return $this->getTemplatePath($routeBaseTemplate ?: $defaultBaseTemplate);
   }
 
   /**
@@ -376,23 +377,26 @@ class App {
     */
   protected function _getViewData() {
     $data = $this->_loadConfig("data");
+    $thisRoute = $this->_routes[$this->routeName];
 
     $data["_baseUrl"] = $this->getSetting("baseUrl");
 
     // Export the formatted HTML meta title.
-    $data["_metaTitle"] = $this->getMetaTitle($this->_routes[$this->routeName]["title"]);
+    $data["_metaTitle"] = $this->getMetaTitle($thisRoute["title"] ?? NULL);
 
-    // Export the routes config without their `view` and `template` attributes.
+    // Export the routes config without unnecessary attributes.
     $data["_routes"] = $this->_routes;
     foreach (array_keys($data["_routes"]) as $routeName) {
       $this->_formatRouteTitle($data["_routes"][$routeName]["title"], $routeName, TRUE);
+      unset($data["_routes"][$routeName]["baseTemplateName"]);
       unset($data["_routes"][$routeName]["template"]);
       unset($data["_routes"][$routeName]["view"]);
+      unset($data["_routes"][$routeName]["sitemap"]);
     }
 
     $data["_requestPath"] = $this->requestPath;
     $data["_routeName"] = $this->routeName;
-    $data["_routeConfig"] = $data["_routes"][$this->routeName];
+    $data["_routeConfig"] = $thisRoute;
 
     $data["_settings"] = $this->getSetting("viewSettings", []);
 
