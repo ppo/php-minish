@@ -251,7 +251,9 @@ class App {
    * @return string The path to the template file.
    */
   public function getTemplatePath($name) {
-    return static::TEMPLATE_DIR . "/{$name}.php";
+    $basePath = static::TEMPLATE_DIR . "/" . $name;
+    if (is_dir($basePath)) { $basePath .= "/index"; }
+    return $basePath . ".php";
   }
 
   /**
