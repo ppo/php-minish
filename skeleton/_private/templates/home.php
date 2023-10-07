@@ -4,7 +4,7 @@
 <ul>
 <?php foreach ($_routes as $name => $config): ?>
   <li>
-    <a href="<?php echo $config["path"]; ?>"<?php echo $route === $_routeName ? ' class="active"' : ''; ?>>
+    <a href="<?php echo $config["path"]; ?>"<?php echo $name === $_routeName ? ' class="active"' : ''; ?>>
       <?php echo $config["title"]; ?>
     </a>
   </li>

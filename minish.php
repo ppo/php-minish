@@ -98,7 +98,7 @@ class App {
     * @see App::_loadSettings()
     */
   protected $_settings = [
-    "autoloader" => "static::autoloader",
+    "autoloader" => "App::autoloader",
     "baseTemplateName" => "_base",
     "metaTitleFormatter" => '%2$s | %1$s',  # Params: `baseTitle, routeTitle`.
     "routeTitleFormatter" => null,  # Default value defined in `App::_loadSettings()`.
@@ -195,7 +195,7 @@ class App {
    */
   public function getBaseTemplatePath() {
     return $this->getTemplatePath(
-      $this->_routes[$this->routeName]["baseTemplate"] ?: $this->_settings["baseTemplateName"]
+      ($this->_routes[$this->routeName]["baseTemplate"] ?? null) ?: ($this->_settings["baseTemplateName"] ?? null)
     );
   }
 
@@ -237,10 +237,10 @@ class App {
    * Return a given setting.
    *
    * @param mixed $default Default value.
-   * @return mixed|null The requested setting, or null if not defined.
+   * @return mixed|null The requested setting, or $default if not defined.
    */
   public function getSetting($name, $default=null) {
-    return $this->_settings[$name];
+    return $this->_settings[$name] ?? $default;
   }
 
   /**
@@ -473,7 +473,7 @@ class App {
     // Process routes for auto-complete values.
     foreach (array_keys($routes) as $routeName) {
       // If `path` is not defined, generate one based on the route name.
-      if (!$routes[$routeName]["path"]) {
+      if (!($routes[$routeName]["path"] ?? null)) {
         $routes[$routeName]["path"] = "/{$routeName}";
 
       // Else, ensure the path is harmonized.
@@ -521,7 +521,7 @@ class App {
     $errors = [];
 
     // `autoloadDirs`: Make sure it’s an array.
-    if ($settings["autoloadDirs"]) {
+    if ($settings["autoloadDirs"] ?? null) {
       if (!is_array($settings["autoloadDirs"])) {
         $errors["autoloadDirs"] = "Must be an array of folders.";
       }
@@ -530,30 +530,30 @@ class App {
     }
 
     // `autoloader`: Make sure it’s callable.
-    if ($settings["autoloader"]) {
+    if ($settings["autoloader"] ?? null) {
       if (!is_callable($settings["autoloader"])) {
         $errors["autoloader"] = "Must be callable.";
       }
     }
 
     // `baseMetaTitle`: Verify it’s defined.
-    if (!$settings["baseMetaTitle"]) {
+    if (!($settings["baseMetaTitle"] ?? null)) {
       $errors["baseMetaTitle"] = "Is required.";
     }
 
     /// `baseTemplateName`: Verify that the base template file exists.
-    if (!$this->templateExists($settings["baseTemplateName"])) {
+    if (isset($settings["baseTemplateName"]) && !$this->templateExists($settings["baseTemplateName"])) {
       $erros["baseTemplateName"] = "Base template '{$settings["baseTemplateName"]}' not found.";
     }
 
     // `baseUrl`: Validate it starts with “http” and has no trailing slash.
     $settings["baseUrl"] = rtrim($settings["baseUrl"], "/");
-    if (substr($settings["baseUrl"], 0, 4) !== "http") {
+    if (substr($settings["baseUrl"] ?? "", 0, 4) !== "http") {
       $errors["baseUrl"] = "Must start with \"http(s)://\".";
     }
 
     // `metaTitleFormatter`: Make sure it’s a string or callable.
-    if ($settings["metaTitleFormatter"]) {
+    if ($settings["metaTitleFormatter"] ?? null) {
       if (
         !is_string($settings["metaTitleFormatter"])
         && !is_callable($settings["metaTitleFormatter"])
@@ -563,7 +563,7 @@ class App {
     }
 
     // `routeTitleFormatter`: Make sure the route title formatter is defined, and is callable.
-    if ($settings["routeTitleFormatter"]) {
+    if ($settings["routeTitleFormatter"] ?? null) {
       if (!is_callable($settings["routeTitleFormatter"])) {
         $errors["routeTitleFormatter"] = "Must be callable.";
       }

@@ -7,11 +7,11 @@ RewriteEngine On
 # Force HTTPS; except for Let's Encrypt checks.
 RewriteCond %{HTTP:X-Forwarded-SSL} !on
 RewriteCond %{REQUEST_URI} !^/\.well\-known/
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [QSA,R=301,L]
 
 # Redirect all other domains configured to be served by this code to the main domain.
 RewriteCond %{HTTP_HOST} !^example.com$ [NC]
-RewriteRule ^(.*)$ https://example.com/ [R=301,L]
+RewriteRule ^(.*)$ https://example.com/$1 [QSA,R=301,L]
 
 # Serve directly only the following:
 RewriteCond %{REQUEST_URI} !^/static/

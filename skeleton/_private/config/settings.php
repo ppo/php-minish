@@ -10,7 +10,7 @@ return [
   "baseMetaTitle" => "%PROJECT_META_TITLE%",
 
   // `baseTemplateName` string Name of the base template.
-  // "baseMetaTitle" => "_base",
+  // "baseTemplateName" => "_base",
 
   // `baseUrl` string The base URL of the site. Required to generate `sitemap.xml`.
   // Example: `https://example.com`.
