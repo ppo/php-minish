@@ -17,11 +17,11 @@ declare -A answers=(
 )
 
 ask_input() {
-  printf "\e[1;37m${2}\e[0m"
-  [ -n "$3" ] && printf "\n\e[0mExample: ${3}\e[0m"
-  printf "\n$\e[32m> "
+  printf "$(c wB)${2}$(c)\n"
+  [ -n "$3" ] && printf "Example: ${3}\n"
+  printf "> $(c 0c)"
   read
-  printf "\e[0m"
+  printf "$(c)"
   [ -n "$REPLY" ] && answers[$1]="$REPLY"
   echo
 }
@@ -29,14 +29,14 @@ ask_input() {
 ask_execute() {
   REPLY=
   if [ "$#" == 1 ]; then
-    printf "$(c wB)Execute? $(c 0c)${1}\n"
+    printf "$(c wB)Execute? $(c 0b)${1}$(c)\n"
   else
-    printf "$(c wB)${1}\n"
+    printf "$(c wB)${1}$(c)\n"
     shift
-    for cmd in "$@"; do printf "$(c 0c)${cmd}\n"; done
+    for cmd in "$@"; do printf "$(c 0b)${cmd//%/%%}$(c)\n"; done
   fi
   while [ -z "$REPLY" ]; do
-    printf "> $(c gB)y$(c) or $(c gB)n$(c)? "
+    printf "> $(c wB)y$(c) or $(c wB)n$(c)? "
     read -n 1
     if [ -n "$REPLY" ]; then
       echo
@@ -68,7 +68,7 @@ answers[project_dir]=${answers[project_dir]%/}
 
 ask_input project_meta_title "What's the default HTML meta title?" "${answers[project_meta_title]}"
 
-ask_input project_domain "What will be the final domain name?" "${answers[project_domain]}"
+ask_input project_domain "What will be the production domain name?" "${answers[project_domain]}"
 answers[project_rsync_dst]=${answers[project_rsync_dst]/DOMAIN/${answers[project_domain]}}
 
 ask_input project_rsync_dst "What will be the rsync destination to deploy your project on your server?" "${answers[project_rsync_dst]}"
@@ -79,13 +79,13 @@ answers[minish_dir]=${answers[minish_dir]%/}
 
 
 printf "$(c yB)Here's what you defined:$(c)\n"
-printf "  $(c w)Path to the Minish file: $(c g)${answers[minish_dir]:-(from GitHub:$GIT_REPO)}$(c)\n"
-printf "  $(c w)Slug: $(c g)${answers[project_slug]}$(c)\n"
-printf "  $(c w)Project path: $(c g)${answers[project_dir]}$(c)\n"
-printf "  $(c w)Meta title: $(c g)${answers[project_meta_title]}$(c)\n"
-printf "  $(c w)Domain: $(c g)${answers[project_domain]}$(c)\n"
-printf "  $(c w)Deployment destination: $(c g)${answers[project_rsync_dst]}$(c)\n"
-printf "  $(c w)Local server: $(c g)http://${answers[project_slug]}:8000$(c)\n"
+printf "  $(c w)Path to the Minish file: $(c c)${answers[minish_dir]:-(from GitHub:$GIT_REPO)}$(c)\n"
+printf "  $(c w)Slug: $(c c)${answers[project_slug]}$(c)\n"
+printf "  $(c w)Project path: $(c c)${answers[project_dir]}$(c)\n"
+printf "  $(c w)Meta title: $(c c)${answers[project_meta_title]}$(c)\n"
+printf "  $(c w)Domain: $(c c)${answers[project_domain]}$(c)\n"
+printf "  $(c w)Deployment destination: $(c c)${answers[project_rsync_dst]}$(c)\n"
+printf "  $(c w)Local server: $(c c)http://${answers[project_slug]}:8000$(c)\n"
 printf "\n\n"
 
 
