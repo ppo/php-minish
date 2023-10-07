@@ -448,6 +448,10 @@ class App {
       $routeName = trim($this->requestPath, "/") ?: "home";
       if ($this->templateExists($routeName)) {
         $this->routeName = $routeName;
+        $this->_routes[$routeName] = [
+          "path" => $this->requestPath,
+          "title" => NULL,
+        ];
         return;
       }
     }
