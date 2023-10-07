@@ -7,6 +7,10 @@ declare -r GIT_REPO="ppo/php-minish.git"
 c() { echo "$1" | sed -E "s/(^|[^-_])([krgybmcw])/\1-\2/;s/(^$|0)/!0¡/;s/([BUFNL])/!\1¡/g;s/([-_])([krgybmcw])/!\1\2¡/g;y/BUFN-_krgybmcw/14573401234567/;s/L/22/;s/!/\\\033[/g;s/¡/m/g"; }
 
 
+trap ctrl_c SIGINT
+function ctrl_c() { echo -e $(c 0); exit; }
+
+
 declare -A answers=(
   [project_slug]="my-project"
   [project_dir]="~/dev/SLUG"
@@ -20,7 +24,14 @@ ask_input() {
   printf "$(c wB)${2}$(c)\n"
   [ -n "$3" ] && printf "Example: ${3}\n"
   printf "> $(c 0c)"
-  read
+
+  if [ -n "${!1}" ]; then
+    REPLY="${!1}"
+    echo $REPLY
+  else
+    read
+  fi
+
   printf "$(c)"
   [ -n "$REPLY" ] && answers[$1]="$REPLY"
   echo
@@ -53,6 +64,10 @@ ask_execute() {
   done
   echo
 }
+
+
+# Load values from the given ini file.
+[ -n "$1" ] && source "$1"
 
 
 printf "\n$(c yB)This will create a new $(c w)php-minish$(c y) project.$(c)\n\n"
