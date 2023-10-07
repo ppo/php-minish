@@ -101,7 +101,7 @@ class App {
     "autoloader" => "App::autoloader",
     "baseTemplateName" => "_base",
     "metaTitleFormatter" => '%2$s | %1$s',  # Params: `baseTitle, routeTitle`.
-    "routeTitleFormatter" => null,  # Default value defined in `App::_loadSettings()`.
+    "routeTitleFormatter" => NULL,  # Default value defined in `App::_loadSettings()`.
   ];
 
   /**
@@ -132,7 +132,7 @@ class App {
   * @param boolean $isConsole Whether we’re running in console mode.
   */
 
-  public function __construct($isConsole=false) {
+  public function __construct($isConsole=FALSE) {
     $this->_loadSettings();
     if ($this->_settings["autoloader"]) {
       spl_autoload_register($this->_settings["autoloader"]);
@@ -150,7 +150,7 @@ class App {
    */
   public function run() {
     $this->_initRoute();
-    $view = $this->_getView();  // Handles route not found (i.e. null).
+    $view = $this->_getView();  // Handles route not found (i.e. NULL).
     $data = $this->_getViewData();  // Initialize view data even if route not found.
 
     // Execute the view passing it a reference to te app, the route name and the view data.
@@ -195,7 +195,7 @@ class App {
    */
   public function getBaseTemplatePath() {
     return $this->getTemplatePath(
-      ($this->_routes[$this->routeName]["baseTemplate"] ?? null) ?: ($this->_settings["baseTemplateName"] ?? null)
+      ($this->_routes[$this->routeName]["baseTemplate"] ?? NULL) ?: ($this->_settings["baseTemplateName"] ?? NULL)
     );
   }
 
@@ -239,7 +239,7 @@ class App {
    * @param mixed $default Default value.
    * @return mixed|null The requested setting, or $default if not defined.
    */
-  public function getSetting($name, $default=null) {
+  public function getSetting($name, $default=NULL) {
     return $this->_settings[$name] ?? $default;
   }
 
@@ -282,11 +282,11 @@ class App {
    *
    * @param string &$routeTitle Reference to the route title.
    * @param string $routeName The route name.
-   * @param boolean $force Whether to force formatting even if the title is set to `false`.
+   * @param boolean $force Whether to force formatting even if the title is set to `FALSE`.
    */
-  protected function _formatRouteTitle(&$routeTitle, $routeName, $force=false) {
+  protected function _formatRouteTitle(&$routeTitle, $routeName, $force=FALSE) {
     $formatter = $this->_settings["routeTitleFormatter"];
-    if ($formatter && !$routeTitle && ($force || $routeTitle !== false)) {
+    if ($formatter && !$routeTitle && ($force || $routeTitle !== FALSE)) {
       $routeTitle = $formatter($routeName);
       return $routeTitle;
     }
@@ -315,7 +315,7 @@ class App {
     */
   protected function _getView() {
     // If no route found, render the 404 error page.
-    if ($this->routeName === null) {
+    if ($this->routeName === NULL) {
       return $this->_getErrorView(404);
     }
 
@@ -340,7 +340,7 @@ class App {
 
     // Otherwise check if a template is defined, verifying that the file exists.
     // Finally, if template is defined, check if a template exists with the route name.
-    $template = null;
+    $template = NULL;
     if (isset($config["template"])) {
       if ($this->templateExists($config["template"])) {
         $template = $config["template"];
@@ -385,7 +385,7 @@ class App {
     // Export the routes config without their `view` and `template` attributes.
     $data["_routes"] = $this->_routes;
     foreach (array_keys($data["_routes"]) as $routeName) {
-      $this->_formatRouteTitle($data["_routes"][$routeName]["title"], $routeName, true);
+      $this->_formatRouteTitle($data["_routes"][$routeName]["title"], $routeName, TRUE);
       unset($data["_routes"][$routeName]["template"]);
       unset($data["_routes"][$routeName]["view"]);
     }
@@ -420,7 +420,7 @@ class App {
   /**
     * Initialize the route based on the request path, using the first matching.
     *
-    * @return string|null The name of the route or null if no route found.
+    * @return string|null The name of the route or NULL if no route found.
     */
   protected function _initRoute() {
     $this->_initRequestPath();
@@ -455,14 +455,14 @@ class App {
     *    - The index key is the `route-name`. /!\ It must be in dash-case.
     *    - `path`: URL path associated with this route. Default: `/$routeName`.
     *    - `title`: Title of the page, used in the HTML meta title or to generate navigation links.
-    *      - If `false`, it won’t be used in the HTML meta title but well in the routes passed to
+    *      - If `FALSE`, it won’t be used in the HTML meta title but well in the routes passed to
     *        the view.
     *      - If empty, it is generated using `settings.routeTitleFormatter($routeName)`.
     *    - `view`: The view to render the content. It can be defined as follows:
     *      - As a class name: `FooBarView`
     *        (default autoload: `Foo-Bar` & `View+s` => `_private/views/foo-bar.php`).
     *      - As a callable: `[$obj, "method"]`, `Class::method`, or
-    *        `function($app, $data=null) { echo "content"; }`.
+    *        `function($app, $data=NULL) { echo "content"; }`.
     *    - `template`: If not view, the default `View` is used with this template name
     *      (from `_private/templates/{$name}.php`).
     *      - If not defined, use the `route-name` as template name if that file exists.
@@ -473,7 +473,7 @@ class App {
     // Process routes for auto-complete values.
     foreach (array_keys($routes) as $routeName) {
       // If `path` is not defined, generate one based on the route name.
-      if (!($routes[$routeName]["path"] ?? null)) {
+      if (!($routes[$routeName]["path"] ?? NULL)) {
         $routes[$routeName]["path"] = "/{$routeName}";
 
       // Else, ensure the path is harmonized.
@@ -521,7 +521,7 @@ class App {
     $errors = [];
 
     // `autoloadDirs`: Make sure it’s an array.
-    if ($settings["autoloadDirs"] ?? null) {
+    if ($settings["autoloadDirs"] ?? NULL) {
       if (!is_array($settings["autoloadDirs"])) {
         $errors["autoloadDirs"] = "Must be an array of folders.";
       }
@@ -530,14 +530,14 @@ class App {
     }
 
     // `autoloader`: Make sure it’s callable.
-    if ($settings["autoloader"] ?? null) {
+    if ($settings["autoloader"] ?? NULL) {
       if (!is_callable($settings["autoloader"])) {
         $errors["autoloader"] = "Must be callable.";
       }
     }
 
     // `baseMetaTitle`: Verify it’s defined.
-    if (!($settings["baseMetaTitle"] ?? null)) {
+    if (!($settings["baseMetaTitle"] ?? NULL)) {
       $errors["baseMetaTitle"] = "Is required.";
     }
 
@@ -553,7 +553,7 @@ class App {
     }
 
     // `metaTitleFormatter`: Make sure it’s a string or callable.
-    if ($settings["metaTitleFormatter"] ?? null) {
+    if ($settings["metaTitleFormatter"] ?? NULL) {
       if (
         !is_string($settings["metaTitleFormatter"])
         && !is_callable($settings["metaTitleFormatter"])
@@ -563,7 +563,7 @@ class App {
     }
 
     // `routeTitleFormatter`: Make sure the route title formatter is defined, and is callable.
-    if ($settings["routeTitleFormatter"] ?? null) {
+    if ($settings["routeTitleFormatter"] ?? NULL) {
       if (!is_callable($settings["routeTitleFormatter"])) {
         $errors["routeTitleFormatter"] = "Must be callable.";
       }
@@ -594,11 +594,11 @@ class App {
   /**
    * Generate a `sitemap.xml` based on the routes configuration.
    *
-   * @param boolean $pingGoogle Whether to ping Google if the sitemap changed. Default: `true`.
+   * @param boolean $pingGoogle Whether to ping Google if the sitemap changed. Default: `TRUE`.
    * @return array The triplet [path to sitemap, sitemap changed?, Google ping URL].
    * @throws Exception If the base URL is not defined.
    */
-  public function generateSitemap($pingGoogle=true) {
+  public function generateSitemap($pingGoogle=TRUE) {
     $isDeployMode = $argv[1] === "deploy";
 
     // Make sure the path to the public folder is defined.
@@ -727,7 +727,7 @@ class View {
    *
    * @param string $templateName The name of the main template.
    */
-  public function __construct($templateName=null) {
+  public function __construct($templateName=NULL) {
     $this->setMainTemplate($templateName);
   }
 
@@ -739,7 +739,7 @@ class View {
    * @param App $app Instance of the app.
    * @param array $data View data.
    */
-  public function __invoke($app, $data=null) {
+  public function __invoke($app, $data=NULL) {
     $this->_init($app, $data);
 
     // Render the view/base template.
@@ -789,7 +789,7 @@ class View {
    * @return string The path to the template file.
    */
   protected function _getTemplatePath($name) {
-    return $name ? $this->_private->getTemplatePath($name) : null;
+    return $name ? $this->_private->getTemplatePath($name) : NULL;
   }
 
   /**
@@ -798,7 +798,7 @@ class View {
    * @param App $app Reference to the app.
    * @param array $data Data for the view.
    */
-  protected function _init($app, $data=null) {
+  protected function _init($app, $data=NULL) {
     $this->BASE_TEMPLATE_PATH = $app->getBaseTemplatePath();
     $this->_private = $app;
     $this->_data = $data ?: [];
@@ -847,7 +847,7 @@ function minishRender500() {
   die;
 }
 
-function minishErrorHandler($errNo, $errStr, $errFile=null, $errLine=null, $errContext=null) {
+function minishErrorHandler($errNo, $errStr, $errFile=NULL, $errLine=NULL, $errContext=NULL) {
   if ($errNo & MINISH_500_ERRORS) {
     minishRender500();
   }

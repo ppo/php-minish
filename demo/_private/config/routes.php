@@ -2,7 +2,7 @@
 return [
   "home" => [
     "path" => "/",
-    "title" => false,  # Not used in HTML meta title but generated in routes using
+    "title" => FALSE,  # Not used in HTML meta title but generated in routes using
                        # `settings.routeTitleFormatter($routeName)`.
   ],
 
@@ -42,7 +42,7 @@ return [
   "independent-function-view" => [
     "path" => "/independent-function-view",
     "title" => "Independent Function View",
-    "view" => function($app, $data=null) {
+    "view" => function($app, $data=NULL) {
       echo '<h2>Template: Independent Function View</h2><a href="/">Home</a>';
     },
   ],
