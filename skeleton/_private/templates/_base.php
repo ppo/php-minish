@@ -2,9 +2,7 @@
 // Google Fonts URL without "display=swap".
 $GFONTS_CSS = "https://fonts.googleapis.com/css2" .
   "?family=Roboto:wght@400;700";
-$META_DESCRIPTION = $_routeConfig["description"]
-  ? $_routeConfig["description"]
-  : $_settings["metaDescription"];
+  $META_DESCRIPTION = $_routeConfig["description"] ?? $_settings["metaDescription"] ?? null;
 ?>
 <!doctype html>
 <html lang="en">
