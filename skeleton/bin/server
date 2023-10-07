@@ -16,6 +16,7 @@ SCSS_DIR="${PUBLIC_DIR}/src/scss"
 if [ -d "$SCSS_DIR" ]; then
   echo -e "\e[37;1mWatching SCSS folder and running local server…\e[0m"
   echo -e "${MSG_EXTERNAL}"
+  # parallel --citation <<< "will cite\n" 2>/dev/null
   parallel -u ::: "${__DIR__}/sass" "php -S ${HOST}:8000 -t \"$PUBLIC_DIR\""
 else
   echo -e "\e[37;1mRunning local server…\e[0m"

@@ -12,7 +12,7 @@ body {
   margin: 0;
 
 
-  @media only screen and (min-width: $breakpoint-xs) {
+  @media only screen and (min-width: $breakpoint-md) {
     font-size: 1.6rem;
   }
 }
