@@ -429,8 +429,18 @@ class App {
   protected function _initRoute() {
     $this->_initRequestPath();
 
+    // Look for a match in configured routes.
     foreach ($this->_routes as $routeName => $routeConfig) {
       if ($routeConfig["path"] === $this->requestPath) {
+        $this->routeName = $routeName;
+        return;
+      }
+    }
+
+    // Find template based on URL path.
+    if ($this->getSetting("fileSystemRoutes", TRUE)) {
+      $routeName = trim($this->requestPath, "/");
+      if ($this->templateExists($routeName)) {
         $this->routeName = $routeName;
         return;
       }

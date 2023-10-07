@@ -6,6 +6,8 @@ return [
   # `autoloader` callable Custom autoloader function for `spl_autoload_register()`.
   // "autoloader" => function($class) { … },
 
+  # `fileSystemRoutes` boolean Whether to locate template using URL path as file path.
+  // "fileSystemRoutes" => TRUE,
 
   # `baseUrl` string The base URL of the site. Required to generate `sitemap.xml`.
   // Example: `https://example.com`.
