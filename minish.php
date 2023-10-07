@@ -387,13 +387,17 @@ class App {
     $data["_metaTitle"] = $this->getMetaTitle($thisRoute["title"] ?? NULL);
 
     // Export the routes config without unnecessary attributes.
-    $data["_routes"] = $this->_routes;
-    foreach (array_keys($data["_routes"]) as $routeName) {
-      $this->_formatRouteTitle($data["_routes"][$routeName]["title"], $routeName, TRUE);
-      unset($data["_routes"][$routeName]["baseTemplateName"]);
-      unset($data["_routes"][$routeName]["template"]);
-      unset($data["_routes"][$routeName]["view"]);
-      unset($data["_routes"][$routeName]["sitemap"]);
+    $data["_routes"] = [];
+    foreach ($this->_routes as $routeName => $routeConfig) {
+      if (substr($routeName, 0, 2) === "__") continue;
+
+      $this->_formatRouteTitle($routeConfig["title"], $routeName, TRUE);
+      unset($routeConfig["baseTemplateName"]);
+      unset($routeConfig["template"]);
+      unset($routeConfig["view"]);
+      unset($routeConfig["sitemap"]);
+
+      $data["_routes"][$routeName] = $routeConfig;
     }
 
     $data["_requestPath"] = $this->requestPath;
