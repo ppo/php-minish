@@ -1,11 +1,11 @@
 <h1>Welcome</h1>
 
-<p>Available routes:</p>
+<p>Configured routes:</p>
 <ul>
 <?php foreach ($_routes as $name => $config): ?>
   <li>
-    <a href="<?php echo $config["path"]; ?>"<?php echo $name === $_routeName ? ' class="active"' : ''; ?>>
-      <?php echo $config["title"]; ?>
+    <a href="<?= $config["path"] ?>"<?= $name === $_routeName ? ' class="active"' : '' ?>>
+      <?= $config["title"] ?>
     </a>
   </li>
 <?php endforeach; ?>
