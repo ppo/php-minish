@@ -321,7 +321,7 @@ class App {
     }
 
     // Retrieve the route config.
-    $config = $this->_routes[$this->routeName];
+    $config = $this->_routes[$this->routeName] ?? NULL;
 
     // Check if it’s a redirection.
     if (isset($config["redirect"])) {
@@ -377,7 +377,7 @@ class App {
     */
   protected function _getViewData() {
     $data = $this->_loadConfig("data");
-    $thisRoute = $this->_routes[$this->routeName];
+    $thisRoute = $this->_routes[$this->routeName] ?? NULL;
 
     $data["_baseUrl"] = $this->getSetting("baseUrl");
 
@@ -439,7 +439,7 @@ class App {
 
     // Find template based on URL path.
     if ($this->getSetting("fileSystemRoutes", TRUE)) {
-      $routeName = trim($this->requestPath, "/");
+      $routeName = trim($this->requestPath, "/") ?: "home";
       if ($this->templateExists($routeName)) {
         $this->routeName = $routeName;
         return;
@@ -496,7 +496,9 @@ class App {
       }
 
       // If `title` is not defined, convert the route name.
-      $this->_formatRouteTitle($routes[$routeName]["title"], $routeName);
+      if ($routes[$routeName]["title"]) {
+        $this->_formatRouteTitle($routes[$routeName]["title"], $routeName);
+      }
     }
 
     // On local env, auto-add a route to debug the page.
